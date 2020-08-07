@@ -12,6 +12,10 @@ class DurationVideoController: UIViewController {
     var player: AVPlayer!
     var isVideoPlay = false
     var path: NSURL!
+    var rate: Float!
+    var delegate: TransformCropVideoDelegate!
+    var url: URL!
+    var isSave = false
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,10 +26,12 @@ class DurationVideoController: UIViewController {
         playerController.showsPlaybackControls = false
         playerController.view.frame = CGRect(x: 0, y: 0, width: viewVideo1.frame.width, height:  viewVideo1.frame.height)
         self.viewVideo1.addSubview(playerController.view)
+        rate = 1.0
     }
     
     @IBAction func back(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        self.delegate.transformDuration(url: self.url!)
+                       self.navigationController?.popViewController(animated: true)
     }
     
     func addTimeObserver() {
@@ -42,83 +48,50 @@ class DurationVideoController: UIViewController {
     
     @IBAction func save(_ sender: Any) {
         
-        if player.rate == 2.0{
-            guard let filePath = path else {
-                debugPrint("Video not found")
-                return
-            }
-            player.pause()
-            
-            //SpeeđAuio
-            let furl = createUrlInApp(name: "1.mp4")
-            removeFileIfExists(fileURL: furl)
-            let cut = "-i \(filePath) -filter_complex \"[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]\" -map \"[v]\" -map \"[a]\" \(furl)"
-              
-            //SpeedVideo
-            let furl2 = createUrlInApp(name: "2.mp4")
-            removeFileIfExists(fileURL: furl2)
-            let cut2 = "-itsscale 0.5 -i \(filePath) -c copy \(furl2)"
-            
-            //graft
-            let furl3 = createUrlInApp(name: "3.mp4")
-            removeFileIfExists(fileURL: furl3)
-            let cut3 = "-i \(furl2) -i \(furl) -c copy -map 0:v -map 1:a \(furl3)"
-            
-            DispatchQueue.main.async {
-                ZKProgressHUD.show()
-            }
-            let serialQueue = DispatchQueue(label: "serialQueue")
-            serialQueue.async {
-                MobileFFmpeg.execute(cut)
-                MobileFFmpeg.execute(cut2)
-                MobileFFmpeg.execute(cut3)
-               CustomPhotoAlbum.sharedInstance.saveVideo(url: furl3)
-                DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
-                    ZKProgressHUD.showSuccess()
-                }
-            }
-        } else if player.rate == 0.5 {
-            guard let filePath = path else {
-                debugPrint("Video not found")
-                return
-            }
-            player.pause()
-            //SpeeđAuio
-            let furl = createUrlInApp(name: "1.mp4")
-            removeFileIfExists(fileURL: furl)
-            let cut = "-i \(filePath) -filter_complex \"[0:v]setpts=2.0*PTS[v];[0:a]atempo=0.5[a]\" -map \"[v]\" -map \"[a]\" \(furl)"
+        isSave = true
+        
+        guard let filePath = path else {
+            debugPrint("Video not found")
+            return
+        }
+        player.pause()
+        
+        //SpeeđAuio
+        let furl = createUrlInApp(name: "1.mp4")
+        removeFileIfExists(fileURL: furl)
+        let cut = "-i \(filePath) -filter_complex \"[0:v]setpts=1/\(rate!)*PTS[v];[0:a]atempo=\(rate!)[a]\" -map \"[v]\" -map \"[a]\" \(furl)"
+          
+        //SpeedVideo
+        let furl2 = createUrlInApp(name: "2.mp4")
+        removeFileIfExists(fileURL: furl2)
+        let newrate = 1/rate!
+        let cut2 = "-itsscale \(newrate) -i \(filePath) -c copy \(furl2)"
+        
+        //graft
+        let furl3 = createUrlInApp(name: "3.mp4")
+        removeFileIfExists(fileURL: furl3)
+        let cut3 = "-i \(furl2) -i \(furl) -c copy -map 0:v -map 1:a \(furl3)"
+        
+        DispatchQueue.main.async {
+            ZKProgressHUD.show()
+        }
+        let serialQueue = DispatchQueue(label: "serialQueue")
+        serialQueue.async {
             MobileFFmpeg.execute(cut)
-            
-            //SpeedVideo
-            let furl2 = createUrlInApp(name: "2.mp4")
-            removeFileIfExists(fileURL: furl2)
-            let cut2 = "-itsscale 2.0 -i \(filePath) -c copy \(furl2)"
             MobileFFmpeg.execute(cut2)
-            
-            //graft
-            let furl3 = createUrlInApp(name: "3.mp4")
-            removeFileIfExists(fileURL: furl3)
-            let cut3 = "-i \(furl2) -i \(furl) -c copy -map 0:v -map 1:a \(furl3)"
             MobileFFmpeg.execute(cut3)
-            
+            print(furl3)
+            self.url = furl3
             DispatchQueue.main.async {
-                ZKProgressHUD.show()
-            }
-            let serialQueue = DispatchQueue(label: "serialQueue")
-            serialQueue.async {
-                MobileFFmpeg.execute(cut3)
-                CustomPhotoAlbum.sharedInstance.saveVideo(url: furl3)
-                DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
-                    ZKProgressHUD.showSuccess()
-                }
+                ZKProgressHUD.dismiss()
+                ZKProgressHUD.showSuccess()
             }
         }
+        
     }
     
     @IBAction func btnPlayy(_ sender: UIButton) {
-        player.rate = 1.0
+        player.rate = rate
     }
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
@@ -134,11 +107,13 @@ class DurationVideoController: UIViewController {
     }
     
     @IBAction func forwardPressed(_ sender: Any) {
-        player.rate = 0.5
+        rate = 0.5
+        player.rate = rate
     }
     
     @IBAction func backwardsPressed(_ sender: Any) {
-        player.rate = 2.0
+        rate = 2.0
+        player.rate = rate
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {

@@ -5,26 +5,42 @@ import AVFoundation
 import AVKit
 import ZKProgressHUD
 
+protocol TransformCropVideoDelegate {
+    func transformCropVideo(url: URL)
+    
+    func transformDuration(url: URL)
+}
+
 class CropVideoViewController: AssetSelectionVideoViewController {
     
     @IBOutlet weak var videoCropView: VideoCropView!
     @IBOutlet weak var selectThumbView: ThumbSelectorView!
-    var path : NSURL!
     
+    var path : NSURL!
+    var cropURL: URL!
+    var isSave = false
+    var delegate: TransformCropVideoDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        load()
-        videoCropView.setAspectRatio(CGSize(width: 3, height: 2), animated: false)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        videoCropView.setAspectRatio(CGSize(width: 3, height: 2), animated: false)
+        load()
+    }
+    
     @IBAction func back(_ sender: Any) {
         
         self.navigationController?.popViewController(animated: true)
-        
     }
     
     @IBAction func save(_ sender: Any) {
-        
+        if isSave {
+            delegate.transformCropVideo(url: cropURL)
+        }
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func selectAsset(_ sender: Any) {
@@ -33,6 +49,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         selectThumbView.asset = asset
         selectThumbView.delegate = self
     }
+    
     func load() {
         let asset = AVAsset(url: path as URL)
         videoCropView.asset = asset
@@ -111,7 +128,9 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         let serialQueue = DispatchQueue(label: "serialQueue")
         serialQueue.async {
             MobileFFmpeg.execute(crop)
-            CustomPhotoAlbum.sharedInstance.saveVideo(url: furl)
+            self.cropURL = furl
+            self.isSave = true
+//            CustomPhotoAlbum.sharedInstance.saveVideo(url: furl)
             DispatchQueue.main.async {
                 ZKProgressHUD.dismiss()
                 ZKProgressHUD.showSuccess()

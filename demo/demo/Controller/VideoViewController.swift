@@ -26,16 +26,20 @@ class VideoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         videoPicker.sourceType = .photoLibrary
         videoPicker.delegate = self
         videoPicker.mediaTypes = ["public.movie"]
         videoPicker.modalPresentationStyle = .overFullScreen
-        initVideoTimeline(url: originalVideoURL as URL)
+        
         initFuncCollectionView()
         buttonPlay.isHidden = true
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        initVideoTimeline(url: originalVideoURL as URL)
         fixedVideoURL = originalVideoURL
-        print(originalVideoURL!)
     }
 
     @IBAction func btnBack(_ sender: Any) {
@@ -123,7 +127,9 @@ extension VideoViewController: UICollectionViewDelegate, UICollectionViewDataSou
 }
 
 extension VideoViewController : TimelinePlayStatusReceiver{
+    
     func initVideoTimeline(url : URL){
+        tlView.subviews.forEach({$0.removeFromSuperview()})
         videoTimelineView = VideoTimelineView()
         videoTimelineView.backgroundColor = UIColor.clear
         videoTimelineView.frame = CGRect(x: 0, y: tlView.frame.size.height/4, width: tlView.frame.size.width, height: tlView.frame.size.height/2)
@@ -139,6 +145,7 @@ extension VideoViewController : TimelinePlayStatusReceiver{
         playerLayer.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
         playerLayer.frame = videoView.bounds
 //        playerLayer.backgroundColor = UIColor.black.cgColor
+        self.videoView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
         self.videoView.layer.addSublayer(playerLayer)
         setPlayButtonImage()
     }
@@ -246,10 +253,12 @@ extension VideoViewController {
         case "Duration":
             let View = sb.instantiateViewController(withIdentifier: view) as! DurationVideoController
             View.path = self.originalVideoURL
+            View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "CROP":
             let View = sb.instantiateViewController(withIdentifier: view) as! CropVideoViewController
             View.path = self.originalVideoURL
+            View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "TF":
             let View = sb.instantiateViewController(withIdentifier: view) as! TFVideoViewController
@@ -273,7 +282,18 @@ extension VideoViewController {
     }
 }
 
-extension VideoViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate{
+extension VideoViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate, TransformCropVideoDelegate {
+    
+    func transformDuration(url: URL) {
+        self.originalVideoURL = url as NSURL
+    }
+    
+    
+    func transformCropVideo(url: URL) {
+        self.originalVideoURL = url as NSURL
+    }
+    
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         secondVideoURL = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL
         videoPicker.dismiss(animated: true, completion: nil)
