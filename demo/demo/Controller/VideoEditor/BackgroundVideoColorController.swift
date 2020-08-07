@@ -19,6 +19,10 @@ class BackgroundVideoColorController: UIViewController {
     var playerController = AVPlayerViewController()
     var str = ""
     var path:NSURL!
+    var BgURL: URL!
+    var isSave = false
+    var delegate: TransformCropVideoDelegate!
+    var ratio:CGFloat!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,59 +51,49 @@ class BackgroundVideoColorController: UIViewController {
         
         self.videoView.addSubview(playerController.view)
         playerController.player?.play()
-
+        
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        ratio = getVideoRatio(url: path as URL)
+    }
+    
     @IBAction func back(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func play(_ sender: Any) {
+    }
+    
+    @IBAction func background(_ sender: Any) {
+        
+        let url = squareVideo(url: path as URL, ratio: ratio)
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: final)
+        let s = "-i \(url) \(final)"
+        
+        playerController.player?.pause()
+        DispatchQueue.main.async {
+            ZKProgressHUD.show()
+        }
+        let serialQueue = DispatchQueue(label: "serialQueue")
+        serialQueue.async {
+            MobileFFmpeg.execute(s)
+            self.BgURL = final
+            self.isSave = true
+            DispatchQueue.main.async {
+                ZKProgressHUD.dismiss(0.5)
+                ZKProgressHUD.showSuccess()
+            }
+        }
+    }
+    
     
     @IBAction func save(_ sender: Any) {
-        
-        let alert = UIAlertController(title: "Save?", message: "", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "No", style: .default, handler: ({action in
-        })))
-        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: ({action in
-            
-            self.playerController.player?.pause()
-            func createUrlInApp(name: String ) -> URL {
-                return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
-            }
-            
-            func removeFileIfExists(fileURL: URL) {
-                do {
-                    try FileManager.default.removeItem(at: fileURL)
-                } catch {
-                    print(error.localizedDescription)
-                    return
-                }
-            }
-            guard let filePath = self.path else {
-                debugPrint("Video not found")
-                return
-            }
-            
-            let furl = createUrlInApp(name: "MM.MOV")
-            removeFileIfExists(fileURL: furl)
-            
-            
-            let a = "-i \(filePath)  -aspect 1:1 -vf \"pad=iw:ih*2:iw/1:ih/2:color=\(self.str)\" \(furl)"
-            
-            DispatchQueue.main.async {
-                ZKProgressHUD.show()
-            }
-            let serialQueue = DispatchQueue(label: "serialQueue")
-            serialQueue.async {
-                MobileFFmpeg.execute(a)
-                CustomPhotoAlbum.sharedInstance.saveVideo(url: furl)
-                DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
-                    ZKProgressHUD.showSuccess()
-                }
-            }
-        })))
-        present(alert, animated: true, completion: nil)
+        if isSave {
+            self.delegate.transformBackground(url: self.BgURL!)
+        }
+        self.navigationController?.popViewController(animated: true)
     }
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
@@ -147,6 +141,56 @@ class BackgroundVideoColorController: UIViewController {
         if playBackTime >= endTime {
             player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             trimmerView.seek(to: startTime)
+        }
+    }
+    
+    func currentDate()->String{
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMddhhmmss"
+        return df.string(from: Date())
+    }
+    func squareVideo(url : URL, ratio : CGFloat) -> URL{
+        let furl = createUrlInApp(name: "video1.MOV")
+        removeFileIfExists(fileURL: furl)
+        let furl2 = createUrlInApp(name: "video2.MOV")
+        removeFileIfExists(fileURL: furl2)
+        let s1 = "-i \(url) \(furl)"
+        MobileFFmpeg.execute(s1)
+        if ratio == 1 {
+            return url
+        }
+        else if ratio > 1{
+            let s = "-i \(furl)  -aspect 1:1 -vf \"pad=iw:ih*\(ratio):(ow-iw)/2:(oh-ih)/2:color=\(self.str)\" \(furl2)"
+             MobileFFmpeg.execute(s)
+        }
+        else {
+            let s = "-i \(furl)  -aspect 1:1 -vf \"pad=iw/\(ratio):ih:(ow-iw)/2:(oh-ih)/2:color=\(self.str)\" \(furl2)"
+
+                MobileFFmpeg.execute(s)
+        }
+        return furl2
+    }
+    func getVideoRatio(url:URL) -> CGFloat{
+        let size = resolutionSizeForLocalVideo(url: url)
+        return size!.width/size!.height
+    }
+    
+    func resolutionSizeForLocalVideo(url:URL) -> CGSize? {
+        guard let track = AVAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: abs(size.width), height: abs(size.height))
+    }
+    
+    func createUrlInApp(name: String ) -> URL {
+        return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
+    }
+    
+    func removeFileIfExists(fileURL: URL) {
+        do {
+            try FileManager.default.removeItem(at: fileURL)
+        } catch {
+            print(error.localizedDescription)
+            return
         }
     }
 }
@@ -197,6 +241,6 @@ extension BackgroundVideoColorController: UICollectionViewDelegate, UICollection
         let duration = (trimmerView.endTime! - trimmerView.startTime!).seconds
         print(duration)
     }
-  
+    
 }
 

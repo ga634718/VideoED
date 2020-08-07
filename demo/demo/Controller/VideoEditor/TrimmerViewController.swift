@@ -15,25 +15,41 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
     var path:NSURL!
+    var delegate: TransformCropVideoDelegate!
+    var trimURL: URL!
+    var isSave = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
         trimmerView.asset = asset
         trimmerView.delegate = self
     }
-    
-    @IBAction func selectAsset(_ sender: Any) {
-        loadAssetRandomly()
-    }
+
     
     @IBAction func back(_ sender: Any) {
         player?.pause()
         self.navigationController?.popViewController(animated: true)  
     }
+    
+    
+    
+    @IBAction func save(_ sender: Any) {
+        if isSave {
+            delegate.transformTrimVideo(url: trimURL)
+        }
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    
     @IBAction func duplicate(_ sender: Any) {
         player?.pause()
+        isSave = true
         
         guard let filePath = path else {
             debugPrint("Video not found")
@@ -47,10 +63,15 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         let end = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
         let curr = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
         
+        let url = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: url)
+        let url2 = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: url2)
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: final)
         if st == 0 {
-            let url2 = createUrlInApp(name: "b.MOV")
-            removeFileIfExists(fileURL: url2)
-            let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
+    
+            let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(final)"
             
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
@@ -58,17 +79,17 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
-                CustomPhotoAlbum.sharedInstance.saveVideo(url: url2)
+                self.trimURL = final
+                self.isSave = true
                 DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
+                    ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
                 }
             }
             
         } else if st1 == curr {
-            let url2 = createUrlInApp(name: "b1.MOV")
-            removeFileIfExists(fileURL: url2)
-            let cut2 = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(url2)"
+ 
+            let cut2 = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(final)"
             
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
@@ -76,26 +97,18 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
-                CustomPhotoAlbum.sharedInstance.saveVideo(url: url2)
+                self.trimURL = final
+                self.isSave = true
                 DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
+                    ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
                 }
             }
         } else {
-            let url = createUrlInApp(name: "a2.MOV")
-            removeFileIfExists(fileURL: url)
+
             let cut = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(url)"
-            
-            let url2 = createUrlInApp(name: "b2.MOV")
-            removeFileIfExists(fileURL: url2)
             let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
-            
-            let url3 = createUrlInApp(name: "c2.MOV")
-            removeFileIfExists(fileURL: url3)
-            
-            
-            let cut3 = "-i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(url3)"
+            let cut3 = "-i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
             }
@@ -104,9 +117,10 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut)
                 MobileFFmpeg.execute(cut2)
                 MobileFFmpeg.execute(cut3)
-                CustomPhotoAlbum.sharedInstance.saveVideo(url: url3)
+                self.trimURL = final
+                self.isSave = true
                 DispatchQueue.main.async {
-                    ZKProgressHUD.dismiss()
+                    ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
                 }
             }
@@ -168,6 +182,11 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             print(error.localizedDescription)
             return
         }
+    }
+    func currentDate()->String{
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMddhhmmss"
+        return df.string(from: Date())
     }
     
     func startPlaybackTimeChecker() {

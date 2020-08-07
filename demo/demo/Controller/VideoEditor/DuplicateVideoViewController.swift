@@ -16,19 +16,22 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     var trimmerPositionChangedTimer: Timer?
     var quality: String = "None"
     var path:NSURL!
+    var duplicateURL: URL!
+    var isSave = false
+    var delegate: TransformCropVideoDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
         trimmerView.asset = asset
         trimmerView.delegate = self
     }
     
-    @IBAction func selectAsset(_ sender: Any) {
-        loadAssetRandomly()
-    }
+
     
     @IBAction func back(_ sender: Any) {
         player?.pause()
@@ -50,19 +53,19 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         let dr = curr - crtime
         let dr2 = crtime + tl
         
-        let url = createUrlInApp(name: "cut0.MOV")
+        let url = createUrlInApp(name: "cut.MOV")
         removeFileIfExists(fileURL: url)
         let url1 = createUrlInApp(name: "cut1.MOV")
         removeFileIfExists(fileURL: url1)
         let url2 = createUrlInApp(name: "cut2.MOV")
         removeFileIfExists(fileURL: url2)
-        let furl = createUrlInApp(name: "vd1.MOV")
+        let furl = createUrlInApp(name: "video.MOV")
         removeFileIfExists(fileURL: furl)
-        let furl1 = createUrlInApp(name: "vd2.MOV")
+        let furl1 = createUrlInApp(name: "video1.MOV")
         removeFileIfExists(fileURL: furl1)
         let audio2 = createUrlInApp(name: "audio.MOV")
         removeFileIfExists(fileURL: audio2)
-        let final = createUrlInApp(name: "final.MOV")
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
         removeFileIfExists(fileURL: final)
         
         if quality == "None" {
@@ -71,18 +74,21 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut1)
                 let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
                 MobileFFmpeg.execute(cut2)
-                let cut3 = "-i \(url1) -i \(url1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
+                let duplicate = "-i \(url1) -i \(url1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
                 
                 DispatchQueue.main.async {
                     ZKProgressHUD.show()
                 }
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
-                    MobileFFmpeg.execute(cut3)
-                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                    MobileFFmpeg.execute(duplicate)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
-                        ZKProgressHUD.dismiss()
+                        ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             } else if st1 == curr {
@@ -93,17 +99,20 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut2)
                 print(url2)
                 
-                let cut3 = "-i \(url2) -i \(url1) -i \(url1) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
+                let duplicate = "-i \(url2) -i \(url1) -i \(url1) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
                 DispatchQueue.main.async {
                     ZKProgressHUD.show()
                 }
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
-                    MobileFFmpeg.execute(cut3)
-                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                    MobileFFmpeg.execute(duplicate)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
-                        ZKProgressHUD.dismiss()
+                        ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             } else {
@@ -121,10 +130,13 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     MobileFFmpeg.execute(cut1)
                     MobileFFmpeg.execute(cut2)
                     MobileFFmpeg.execute(cut3)
-                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
-                        ZKProgressHUD.dismiss()
+                        ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
@@ -158,10 +170,13 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     MobileFFmpeg.execute(ad2)
                     MobileFFmpeg.execute(cmdvd4)
                     MobileFFmpeg.execute(fn)
-                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
-                        ZKProgressHUD.dismiss()
+                        ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             } else {
@@ -178,18 +193,23 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                         MobileFFmpeg.execute(cmdvd22)
                         MobileFFmpeg.execute(ad2)
                         MobileFFmpeg.execute(cmdvd4)
-                        CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                       self.duplicateURL = final
+                        self.isSave = true
+                        self.delegate.transformReal(url: self.duplicateURL!)
                     }
                     if self.quality == "ColorFade"{
                         MobileFFmpeg.execute(cmdvd3)
                         MobileFFmpeg.execute(cmdvd33)
                         MobileFFmpeg.execute(ad2)
                         MobileFFmpeg.execute(cmdvd4)
-                        CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                        self.duplicateURL = final
+                        self.isSave = true
+                        self.delegate.transformReal(url: self.duplicateURL!)
                     }
                     DispatchQueue.main.async {
-                        ZKProgressHUD.dismiss()
+                        ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
@@ -254,6 +274,12 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             print(error.localizedDescription)
             return
         }
+    }
+    
+    func currentDate()->String{
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMddhhmmss"
+        return df.string(from: Date())
     }
     
     func startPlaybackTimeChecker() {

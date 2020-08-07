@@ -7,8 +7,11 @@ import ZKProgressHUD
 
 protocol TransformCropVideoDelegate {
     func transformCropVideo(url: URL)
-    
+    func transformTrimVideo(url: URL)
     func transformDuration(url: URL)
+    func transformBackground(url: URL)
+    func transformReal(url: URL)
+    func transformDuplicate(url: URL)
 }
 
 class CropVideoViewController: AssetSelectionVideoViewController {
@@ -42,22 +45,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         }
         self.navigationController?.popViewController(animated: true)
     }
-    
-    @IBAction func selectAsset(_ sender: Any) {
-        let asset = AVAsset(url: path as URL)
-        videoCropView.asset = asset
-        selectThumbView.asset = asset
-        selectThumbView.delegate = self
-    }
-    
-    func load() {
-        let asset = AVAsset(url: path as URL)
-        videoCropView.asset = asset
-        selectThumbView.asset = asset
-        selectThumbView.delegate = self
-    }
  
-    
     @IBAction func rotate(_ sender: Any) {
         
         let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 9, height: 16) :
@@ -115,24 +103,24 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         let y = cropFrame.minY
         
         
-        let furl = createUrlInApp(name: "VDCROP.MOV")
-        removeFileIfExists(fileURL: furl)
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: final)
         guard let filePath = path else {
             debugPrint("Video not found")
             return
         }
-        let crop = "-i \(filePath) -vf \"crop=\(w):\(h):\(x):\(y)\" \(furl)"
+        let crop = "-i \(filePath) -vf \"crop=\(w):\(h):\(x):\(y)\" \(final)"
         DispatchQueue.main.async {
             ZKProgressHUD.show()
         }
         let serialQueue = DispatchQueue(label: "serialQueue")
         serialQueue.async {
             MobileFFmpeg.execute(crop)
-            self.cropURL = furl
+            self.cropURL = final
             self.isSave = true
-//            CustomPhotoAlbum.sharedInstance.saveVideo(url: furl)
+
             DispatchQueue.main.async {
-                ZKProgressHUD.dismiss()
+                ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
             }       
         }
@@ -182,6 +170,19 @@ class CropVideoViewController: AssetSelectionVideoViewController {
             print(error.localizedDescription)
             return
         }
+    }
+    
+    func currentDate()->String{
+         let df = DateFormatter()
+         df.dateFormat = "yyyyMMddhhmmss"
+         return df.string(from: Date())
+     }
+    
+    func load() {
+        let asset = AVAsset(url: path as URL)
+        videoCropView.asset = asset
+        selectThumbView.asset = asset
+        selectThumbView.delegate = self
     }
 }
 

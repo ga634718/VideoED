@@ -12,10 +12,15 @@ class TFVideoViewController: UIViewController {
     var currentAnimation = 0
     var str = ""
     var path:NSURL!
+    var tfURL: URL!
+    var isSave = false
+    var delegate: TransformCropVideoDelegate!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-
+        super.viewDidLoad()      
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         let player = AVPlayer(url: path as URL)
         playerController.player = player
         playerController.view.frame.size.height = ViewVideo.frame.size.height
@@ -24,7 +29,6 @@ class TFVideoViewController: UIViewController {
         playerController.view.frame = CGRect(x: 0, y: 0, width: ViewVideo.frame.width, height:  ViewVideo.frame.height)
         self.ViewVideo.addSubview(playerController.view)
         playerController.player?.play()
-        
     }
 
     @IBAction func back(_ sender: Any) {
@@ -32,41 +36,34 @@ class TFVideoViewController: UIViewController {
     }
     
     @IBAction func save(_ sender: Any) {
-        playerController.player?.pause()
-        func createUrlInApp(name: String ) -> URL {
-            return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
-        }
         
-        func removeFileIfExists(fileURL: URL) {
-            do {
-                try FileManager.default.removeItem(at: fileURL)
-            } catch {
-                print(error.localizedDescription)
-                return
-            }
-        }
+        playerController.player?.pause()
+        
         guard let filePath = path else {
             debugPrint("Video not found")
             return
         }
-        let furl = createUrlInApp(name: "video.MOV")
-        removeFileIfExists(fileURL: furl)
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: final)
         //\"transpose=1\"
         
-        let transform = "-i \(filePath) -vf \(str) -codec:a copy \(furl)"
+        let transform = "-i \(filePath) -vf \(str) -codec:a copy \(final)"
         DispatchQueue.main.async {
             ZKProgressHUD.show()
         }
         let serialQueue = DispatchQueue(label: "serialQueue")
         serialQueue.async {
             MobileFFmpeg.execute(transform)
-            CustomPhotoAlbum.sharedInstance.saveVideo(url: furl)
+            self.tfURL = final
+            self.isSave = true
+            self.delegate.transformReal(url: self.tfURL!)
             DispatchQueue.main.async {
-                ZKProgressHUD.dismiss()
+                ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
+                self.navigationController?.popViewController(animated: true)
             }
-            
         }
+        
     }
     
     @IBAction func flip(_ sender: Any) {
@@ -116,6 +113,25 @@ class TFVideoViewController: UIViewController {
         currentAnimation += 1
         if currentAnimation > 3 {
             currentAnimation = 0
+        }
+    }
+    
+    func currentDate()->String{
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMddhhmmss"
+        return df.string(from: Date())
+    }
+    
+    func createUrlInApp(name: String ) -> URL {
+        return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
+    }
+    
+    func removeFileIfExists(fileURL: URL) {
+        do {
+            try FileManager.default.removeItem(at: fileURL)
+        } catch {
+            print(error.localizedDescription)
+            return
         }
     }
     
