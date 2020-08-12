@@ -1255,9 +1255,9 @@
                                 <rect key="frame" x="0.0" y="818" width="414" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lzZ-ia-CZg" userLabel="Duplicate">
-                                        <rect key="frame" x="294.5" y="11" width="19.5" height="22"/>
+                                        <rect key="frame" x="294" y="11" width="20" height="22"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <state key="normal" image="trash" catalog="system">
+                                        <state key="normal" image="Duration">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
@@ -1291,7 +1291,7 @@
                                     <constraint firstAttribute="height" constant="56" id="xym-lb-GdV"/>
                                 </constraints>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" distribution="fillEqually" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="Ivf-I8-yP2">
+                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" distribution="fillEqually" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="Ivf-I8-yP2">
                                 <rect key="frame" x="95" y="631" width="226" height="34"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ekq-Yj-5h1" userLabel="forwardPressed">
@@ -1360,6 +1360,7 @@
     </scenes>
     <resources>
         <image name="Background" width="20" height="20"/>
+        <image name="Duration" width="20" height="20"/>
         <image name="Play" width="20" height="20"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
         <image name="chevron.left" catalog="system" width="96" height="128"/>

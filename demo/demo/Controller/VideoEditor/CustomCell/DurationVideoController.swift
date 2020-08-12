@@ -31,7 +31,6 @@ class DurationVideoController: UIViewController {
         loadAsset(asset)
         trimmerView.asset = asset
         trimmerView.delegate = self
-        player?.play()
     }
     
     @IBAction func back(_ sender: Any) {
