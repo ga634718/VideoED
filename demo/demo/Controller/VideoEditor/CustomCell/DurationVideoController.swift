@@ -9,6 +9,8 @@ class DurationVideoController: UIViewController {
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
+    @IBOutlet weak var LblStartTime: UILabel!
+    @IBOutlet weak var LblEndTime: UILabel!
     
     
     var player: AVPlayer?
@@ -39,29 +41,6 @@ class DurationVideoController: UIViewController {
     }
     
     @IBAction func save(_ sender: Any) {
-        if isSave {
-            self.delegate.transformDuration(url: self.url!)
-        }
-        self.navigationController?.popViewController(animated: true)
-    }
-    
-    @IBAction func nomal(_ sender: UIButton) {
-        rate = 1.0
-        player?.rate = rate
-    }
-    
-    @IBAction func backwardsPressed(_ sender: Any) {
-        rate = 0.5
-        player?.rate = rate
-    }
-    
-    @IBAction func forwardPressed(_ sender: Any) {
-        rate = 2.0
-        player?.rate = rate
-    }
-    
-    
-    @IBAction func duplicate(_ sender: Any) {
         guard let filePath = path else {
             debugPrint("Video not found")
             return
@@ -96,11 +75,33 @@ class DurationVideoController: UIViewController {
             MobileFFmpeg.execute(speed)
             self.url = final
             self.isSave = true
+            self.delegate.transformDuration(url: self.url!)
             DispatchQueue.main.async {
                 ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
+                self.navigationController?.popViewController(animated: true)
             }
         }
+    }
+    
+    @IBAction func nomal(_ sender: UIButton) {
+        rate = 1.0
+        player?.rate = rate
+    }
+    
+    @IBAction func backwardsPressed(_ sender: Any) {
+        rate = 0.5
+        player?.rate = rate
+    }
+    
+    @IBAction func forwardPressed(_ sender: Any) {
+        rate = 2.0
+        player?.rate = rate
+    }
+    
+    
+    @IBAction func duplicate(_ sender: Any) {
+        
     }
     
     func changeIconBtnPlay() {
@@ -129,7 +130,7 @@ class DurationVideoController: UIViewController {
         trimmerView.asset = asset
         trimmerView.delegate = self
     }
-
+    
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
         player = AVPlayer(playerItem: playerItem)

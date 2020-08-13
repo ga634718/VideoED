@@ -5,11 +5,11 @@ import PryntTrimmerView
 import ZKProgressHUD
 
 class TrimmerViewController: AssetSelectionVideoViewController {
-    
-    @IBOutlet weak var selectAssetButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
+    @IBOutlet weak var LblStartTime: UILabel!
+    @IBOutlet weak var LblEndTime: UILabel!
     
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
@@ -36,7 +36,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         player?.pause()
         self.navigationController?.popViewController(animated: true)  
     }
-
+    
     @IBAction func save(_ sender: Any) {
         if isSave {
             delegate.transformTrimVideo(url: trimURL)
@@ -45,7 +45,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     }
     
     
-    @IBAction func duplicate(_ sender: Any) {
+    @IBAction func deleteVideo(_ sender: Any) {
         player?.pause()
         isSave = true
         
@@ -61,9 +61,9 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         let end = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
         let curr = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
         
-        let url = createUrlInApp(name: "\(currentDate()).MOV")
+        let url = createUrlInApp(name: "vdCut1.MOV")
         removeFileIfExists(fileURL: url)
-        let url2 = createUrlInApp(name: "\(currentDate()).MOV")
+        let url2 = createUrlInApp(name: "vdCut2.MOV")
         removeFileIfExists(fileURL: url2)
         let final = createUrlInApp(name: "\(currentDate()).MOV")
         removeFileIfExists(fileURL: final)
@@ -125,6 +125,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         }
     }
     
+    
+    
     @IBAction func play(_ sender: Any) {
         
         guard let player = player else { return }
@@ -145,7 +147,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         trimmerView.asset = asset
         trimmerView.delegate = self
     }
-
+    
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
         player = AVPlayer(playerItem: playerItem)

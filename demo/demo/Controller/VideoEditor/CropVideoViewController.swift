@@ -19,6 +19,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     @IBOutlet weak var videoCropView: VideoCropView!
     @IBOutlet weak var selectThumbView: ThumbSelectorView!
     
+    
+    var player: AVPlayer?
     var path : NSURL!
     var cropURL: URL!
     var isSave = false
@@ -52,6 +54,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
             CGSize(width: 3, height: 4)
         videoCropView.setAspectRatio(newRatio, animated: true)
     }
+    
     
     @IBAction func crop(_ sender: Any) {
         

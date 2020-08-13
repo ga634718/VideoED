@@ -65,8 +65,8 @@ class BackgroundVideoColorController: UIViewController {
     @IBAction func play(_ sender: Any) {
     }
     
-    @IBAction func background(_ sender: Any) {
-        
+    @IBAction func save(_ sender: Any) {
+        isSave = true
         let url = squareVideo(url: path as URL, ratio: ratio)
         let final = createUrlInApp(name: "\(currentDate()).MOV")
         removeFileIfExists(fileURL: final)
@@ -81,19 +81,13 @@ class BackgroundVideoColorController: UIViewController {
             MobileFFmpeg.execute(s)
             self.BgURL = final
             self.isSave = true
+            self.delegate.transformBackground(url: self.BgURL!)
             DispatchQueue.main.async {
                 ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
+                self.navigationController?.popViewController(animated: true)
             }
         }
-    }
-    
-    
-    @IBAction func save(_ sender: Any) {
-        if isSave {
-            self.delegate.transformBackground(url: self.BgURL!)
-        }
-        self.navigationController?.popViewController(animated: true)
     }
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
@@ -165,7 +159,6 @@ class BackgroundVideoColorController: UIViewController {
         }
         else {
             let s = "-i \(furl)  -aspect 1:1 -vf \"pad=iw/\(ratio):ih:(ow-iw)/2:(oh-ih)/2:color=\(self.str)\" \(furl2)"
-            
             MobileFFmpeg.execute(s)
         }
         return furl2

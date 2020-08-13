@@ -10,6 +10,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
+    @IBOutlet weak var LblStartTime: UILabel!
+    @IBOutlet weak var LblEndTime: UILabel!
+    
     
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?

@@ -10,6 +10,7 @@ class TFVideoViewController: UIViewController {
     
     var playerController = AVPlayerViewController()
     var currentAnimation = 0
+    var currentAnimation2 = 0
     var str = ""
     var path:NSURL!
     var tfURL: URL!
@@ -72,30 +73,26 @@ class TFVideoViewController: UIViewController {
             case 0:
                 self.playerController.view.transform = .identity
                 
-                self.playerController.view.transform = CGAffineTransform(scaleX: 1, y: -1)
-                self.str = "\"vflip\""
-            case 1:
-                self.playerController.view.transform = .identity
-            case 2:
                 self.playerController.view.transform = CGAffineTransform(scaleX: -1, y: 1)
                 self.str = "\"hflip\""
-            case 3:
+            case 1:
                 self.playerController.view.transform = .identity
+                
             default:
                 break
             }
         })
         currentAnimation += 1
-        if currentAnimation > 3 {
+        if currentAnimation > 1 {
             currentAnimation = 0
         }
     }
     
     @IBAction func turn(_ sender: Any) {
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
-            switch self.currentAnimation{
+            switch self.currentAnimation2{
             case 0:
-                self.playerController.view.transform = .identity  
+                self.playerController.view.transform = .identity
                 self.playerController.view.transform = CGAffineTransform(rotationAngle: .pi / -2)
                 self.str = "\"transpose=2\""
             case 1:
@@ -110,9 +107,9 @@ class TFVideoViewController: UIViewController {
                 break
             }
         })
-        currentAnimation += 1
-        if currentAnimation > 3 {
-            currentAnimation = 0
+        currentAnimation2 += 1
+        if currentAnimation2 > 3 {
+            currentAnimation2 = 0
         }
     }
     
