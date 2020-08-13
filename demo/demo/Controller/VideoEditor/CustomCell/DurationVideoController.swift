@@ -7,9 +7,9 @@ import ZKProgressHUD
 class DurationVideoController: UIViewController {
     
     @IBOutlet weak var playButton: UIButton!
-      @IBOutlet weak var playerView: UIView!
-      @IBOutlet weak var trimmerView: TrimmerView!
-      
+    @IBOutlet weak var playerView: UIView!
+    @IBOutlet weak var trimmerView: TrimmerView!
+    
     
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
@@ -37,7 +37,7 @@ class DurationVideoController: UIViewController {
         player?.pause()
         self.navigationController?.popViewController(animated: true)
     }
-
+    
     @IBAction func save(_ sender: Any) {
         if isSave {
             self.delegate.transformDuration(url: self.url!)
@@ -62,70 +62,74 @@ class DurationVideoController: UIViewController {
     
     
     @IBAction func duplicate(_ sender: Any) {
-          guard let filePath = path else {
-              debugPrint("Video not found")
-              return
-          }
-          player?.pause()
-          isSave = true
-          
-          let furl = createUrlInApp(name: "audio.MOV")
-          removeFileIfExists(fileURL: furl)
-          let furl2 = createUrlInApp(name: "video.MOV")
-          removeFileIfExists(fileURL: furl2)
-          let final = createUrlInApp(name: "\(currentDate()).MOV")
-          removeFileIfExists(fileURL: final)
-          
-          //SpeeđAuio
-          let audio = "-i \(filePath) -filter_complex \"[0:v]setpts=1/\(rate!)*PTS[v];[0:a]atempo=\(rate!)[a]\" -map \"[v]\" -map \"[a]\" \(furl)"
-          
-          //SpeedVideo
-          let newrate = 1/rate!
-          let video = "-itsscale \(newrate) -i \(filePath) -c copy \(furl2)"
-          
-          //graft
-          let speed = "-i \(furl2) -i \(furl) -c copy -map 0:v -map 1:a \(final)"
-          
-          DispatchQueue.main.async {
-              ZKProgressHUD.show()
-          }
-          let serialQueue = DispatchQueue(label: "serialQueue")
-          serialQueue.async {
-              MobileFFmpeg.execute(audio)
-              MobileFFmpeg.execute(video)
-              MobileFFmpeg.execute(speed)
-              self.url = final
-              self.isSave = true
-              DispatchQueue.main.async {
+        guard let filePath = path else {
+            debugPrint("Video not found")
+            return
+        }
+        player?.pause()
+        isSave = true
+        
+        let furl = createUrlInApp(name: "audio.MOV")
+        removeFileIfExists(fileURL: furl)
+        let furl2 = createUrlInApp(name: "video.MOV")
+        removeFileIfExists(fileURL: furl2)
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        removeFileIfExists(fileURL: final)
+        
+        //SpeeđAuio
+        let audio = "-i \(filePath) -filter_complex \"[0:v]setpts=1/\(rate!)*PTS[v];[0:a]atempo=\(rate!)[a]\" -map \"[v]\" -map \"[a]\" \(furl)"
+        
+        //SpeedVideo
+        let newrate = 1/rate!
+        let video = "-itsscale \(newrate) -i \(filePath) -c copy \(furl2)"
+        
+        //graft
+        let speed = "-i \(furl2) -i \(furl) -c copy -map 0:v -map 1:a \(final)"
+        
+        DispatchQueue.main.async {
+            ZKProgressHUD.show()
+        }
+        let serialQueue = DispatchQueue(label: "serialQueue")
+        serialQueue.async {
+            MobileFFmpeg.execute(audio)
+            MobileFFmpeg.execute(video)
+            MobileFFmpeg.execute(speed)
+            self.url = final
+            self.isSave = true
+            DispatchQueue.main.async {
                 ZKProgressHUD.dismiss(0.5)
-                  ZKProgressHUD.showSuccess()
-              }
-          }
-      }
+                ZKProgressHUD.showSuccess()
+            }
+        }
+    }
+    
+    func changeIconBtnPlay() {
+        if player!.isPlaying {
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+        } else {
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
+        }
+    }
     
     @IBAction func play(_ sender: Any) {
         
-        guard let player = player else { return }
-        
-        if !player.isPlaying {
-            player.play()
-            (sender as AnyObject).setImage(UIImage(named: "Pause"), for: UIControl.State.normal)
-            startPlaybackTimeChecker()
-        } else {
-            (sender as AnyObject).setImage(UIImage(named: "Play"), for: UIControl.State.normal)
-            player.pause()
+        if player!.isPlaying {
+            player?.pause()
             stopPlaybackTimeChecker()
+        } else {
+            player?.play()
+            startPlaybackTimeChecker()
         }
+        changeIconBtnPlay()
     }
+    
     
     func loadAsset (_ asset: AVAsset) {
         addVideoPlayer(with: asset, playerView: playerView)
         trimmerView.asset = asset
         trimmerView.delegate = self
-        
     }
-    
-    
+
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
         player = AVPlayer(playerItem: playerItem)

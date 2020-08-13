@@ -30,7 +30,7 @@ class TFVideoViewController: UIViewController {
         self.ViewVideo.addSubview(playerController.view)
         playerController.player?.play()
     }
-
+    
     @IBAction func back(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }

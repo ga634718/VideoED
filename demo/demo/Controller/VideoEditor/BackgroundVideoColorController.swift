@@ -161,12 +161,12 @@ class BackgroundVideoColorController: UIViewController {
         }
         else if ratio > 1{
             let s = "-i \(furl)  -aspect 1:1 -vf \"pad=iw:ih*\(ratio):(ow-iw)/2:(oh-ih)/2:color=\(self.str)\" \(furl2)"
-             MobileFFmpeg.execute(s)
+            MobileFFmpeg.execute(s)
         }
         else {
             let s = "-i \(furl)  -aspect 1:1 -vf \"pad=iw/\(ratio):ih:(ow-iw)/2:(oh-ih)/2:color=\(self.str)\" \(furl2)"
-
-                MobileFFmpeg.execute(s)
+            
+            MobileFFmpeg.execute(s)
         }
         return furl2
     }

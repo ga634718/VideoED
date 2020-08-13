@@ -30,15 +30,13 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         trimmerView.asset = asset
         trimmerView.delegate = self
     }
-
+    
     
     @IBAction func back(_ sender: Any) {
         player?.pause()
         self.navigationController?.popViewController(animated: true)  
     }
-    
-    
-    
+
     @IBAction func save(_ sender: Any) {
         if isSave {
             delegate.transformTrimVideo(url: trimURL)
@@ -70,7 +68,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         let final = createUrlInApp(name: "\(currentDate()).MOV")
         removeFileIfExists(fileURL: final)
         if st == 0 {
-    
+            
             let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(final)"
             
             DispatchQueue.main.async {
@@ -88,7 +86,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             }
             
         } else if st1 == curr {
- 
+            
             let cut2 = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(final)"
             
             DispatchQueue.main.async {
@@ -105,7 +103,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 }
             }
         } else {
-
+            
             let cut = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(url)"
             let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
             let cut3 = "-i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
@@ -146,10 +144,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         addVideoPlayer(with: asset, playerView: playerView)
         trimmerView.asset = asset
         trimmerView.delegate = self
-
     }
-    
-    
+
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
         let playerItem = AVPlayerItem(asset: asset)
         player = AVPlayer(playerItem: playerItem)

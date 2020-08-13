@@ -31,8 +31,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         trimmerView.delegate = self
     }
     
-
-    
     @IBAction func back(_ sender: Any) {
         player?.pause()
         self.navigationController?.popViewController(animated: true)    
@@ -193,7 +191,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                         MobileFFmpeg.execute(cmdvd22)
                         MobileFFmpeg.execute(ad2)
                         MobileFFmpeg.execute(cmdvd4)
-                       self.duplicateURL = final
+                        self.duplicateURL = final
                         self.isSave = true
                         self.delegate.transformReal(url: self.duplicateURL!)
                     }

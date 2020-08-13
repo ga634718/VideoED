@@ -45,7 +45,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         }
         self.navigationController?.popViewController(animated: true)
     }
- 
+    
     @IBAction func rotate(_ sender: Any) {
         
         let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 9, height: 16) :
@@ -118,7 +118,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
             MobileFFmpeg.execute(crop)
             self.cropURL = final
             self.isSave = true
-
+            
             DispatchQueue.main.async {
                 ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
@@ -162,7 +162,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
     }
-
+    
     func removeFileIfExists(fileURL: URL) {
         do {
             try FileManager.default.removeItem(at: fileURL)
@@ -173,10 +173,10 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     }
     
     func currentDate()->String{
-         let df = DateFormatter()
-         df.dateFormat = "yyyyMMddhhmmss"
-         return df.string(from: Date())
-     }
+        let df = DateFormatter()
+        df.dateFormat = "yyyyMMddhhmmss"
+        return df.string(from: Date())
+    }
     
     func load() {
         let asset = AVAsset(url: path as URL)
