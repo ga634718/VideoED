@@ -22,11 +22,11 @@ class CustomPhotoAlbum {
             
             let fetchOptions = PHFetchOptions()
             fetchOptions.predicate = NSPredicate(format: "title = %@", CustomPhotoAlbum.albumName)
-//            let collection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOptions)
-//
-//            if let firstObject: AnyObject = collection.firstObject {
-//                return collection.firstObject as! PHAssetCollection
-//            }
+            let collection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOptions)
+
+            if let firstObject: AnyObject = collection.firstObject {
+                return collection.firstObject as! PHAssetCollection
+            }
             
             return nil
         }

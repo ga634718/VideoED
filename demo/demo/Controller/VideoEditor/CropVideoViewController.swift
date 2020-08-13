@@ -33,7 +33,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         videoCropView.setAspectRatio(CGSize(width: 3, height: 2), animated: false)
-        load()
+        let asset = AVAsset(url: path as URL)
+        loadAsset(asset)
     }
     
     @IBAction func back(_ sender: Any) {
@@ -50,8 +51,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     
     @IBAction func rotate(_ sender: Any) {
         
-        let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 9, height: 16) :
-            CGSize(width: 3, height: 4)
+        let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 2, height: 3) :
+            CGSize(width: 4, height: 3)
         videoCropView.setAspectRatio(newRatio, animated: true)
     }
     
@@ -125,6 +126,9 @@ class CropVideoViewController: AssetSelectionVideoViewController {
             DispatchQueue.main.async {
                 ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
+                self.path = self.cropURL as NSURL?
+                let a = AVAsset(url: self.path as URL)
+                self.loadAsset(a)
             }       
         }
     }
@@ -180,13 +184,18 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         df.dateFormat = "yyyyMMddhhmmss"
         return df.string(from: Date())
     }
-    
-    func load() {
-        let asset = AVAsset(url: path as URL)
-        videoCropView.asset = asset
-        selectThumbView.asset = asset
-        selectThumbView.delegate = self
-    }
+//
+//    func load() {
+//        let asset = AVAsset(url: path as URL)
+//        videoCropView.asset = asset
+//        selectThumbView.asset = asset
+//        selectThumbView.delegate = self
+//    }
+    override func loadAsset(_ asset: AVAsset) {
+          videoCropView.asset = asset
+           selectThumbView.asset = asset
+           selectThumbView.delegate = self
+       }
 }
 
 extension CropVideoViewController: ThumbSelectorViewDelegate {

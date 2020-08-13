@@ -150,17 +150,18 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             MobileFFmpeg.execute(cut2)
             
             let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(crtime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(crtime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
+            let cmdvd11 = "-i \(furl) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
+            
+            
             let cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(crtime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(crtime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(crtime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
             let cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
             let cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(crtime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(crtime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(crtime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
             let cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
             
             if quality == "PushRight"{
-                let ad2 = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
+               let ad2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
                 
-                let cmdvd4 = "-i \(furl) -i \(audio2) -c copy -map 0:v -map 1:a \(furl1)"
-                
-                let fn = "-i \(furl1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
+                let cmdvd4 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
                 
                 DispatchQueue.main.async {
                     ZKProgressHUD.show()
@@ -168,9 +169,10 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
                     MobileFFmpeg.execute(cmdvd1)
+                    MobileFFmpeg.execute(cmdvd11)
                     MobileFFmpeg.execute(ad2)
                     MobileFFmpeg.execute(cmdvd4)
-                    MobileFFmpeg.execute(fn)
+                    print(final)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -194,6 +196,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                         MobileFFmpeg.execute(cmdvd22)
                         MobileFFmpeg.execute(ad2)
                         MobileFFmpeg.execute(cmdvd4)
+                        CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                         self.duplicateURL = final
                         self.isSave = true
                         self.delegate.transformReal(url: self.duplicateURL!)

@@ -99,11 +99,6 @@ class DurationVideoController: UIViewController {
         player?.rate = rate
     }
     
-    
-    @IBAction func duplicate(_ sender: Any) {
-        
-    }
-    
     func changeIconBtnPlay() {
         if player!.isPlaying {
             playButton.setImage(UIImage(named: "Pause"), for: .normal)

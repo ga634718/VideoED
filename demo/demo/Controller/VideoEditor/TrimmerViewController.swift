@@ -82,6 +82,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 DispatchQueue.main.async {
                     ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
+                    let asset = AVAsset(url: final as URL)
+                    self.loadAsset(asset)
                 }
             }
             
@@ -100,6 +102,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 DispatchQueue.main.async {
                     ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
+                    let asset = AVAsset(url: final as URL)
+                    self.loadAsset(asset)
                 }
             }
         } else {
@@ -120,9 +124,12 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 DispatchQueue.main.async {
                     ZKProgressHUD.dismiss(0.5)
                     ZKProgressHUD.showSuccess()
+                    let asset = AVAsset(url: final as URL)
+                    self.loadAsset(asset)
                 }
             }
         }
+        
     }
     
     
