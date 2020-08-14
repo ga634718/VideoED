@@ -131,9 +131,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         }
         
     }
-    
-    
-    
+
     @IBAction func play(_ sender: Any) {
         
         guard let player = player else { return }

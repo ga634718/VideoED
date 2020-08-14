@@ -57,6 +57,16 @@
 		2C95BE1F24D5388B00D88660 /* CenterLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1824D5388B00D88660 /* CenterLine.swift */; };
 		2C95BE2024D5388B00D88660 /* TimelineScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1924D5388B00D88660 /* TimelineScroller.swift */; };
 		2C95BE2124D5388B00D88660 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1A24D5388B00D88660 /* VideoTimelineView.swift */; };
+		2CC0544724E6755C00DF7D5C /* AssetVideoScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0543B24E6755B00DF7D5C /* AssetVideoScrollView.swift */; };
+		2CC0544824E6755C00DF7D5C /* AVAssetTimeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0543C24E6755B00DF7D5C /* AVAssetTimeSelector.swift */; };
+		2CC0544924E6755C00DF7D5C /* ThumbSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0543D24E6755B00DF7D5C /* ThumbSelectorView.swift */; };
+		2CC0544A24E6755C00DF7D5C /* VideoCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0543F24E6755B00DF7D5C /* VideoCropView.swift */; };
+		2CC0544B24E6755C00DF7D5C /* VideoScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0544024E6755B00DF7D5C /* VideoScrollView.swift */; };
+		2CC0544C24E6755C00DF7D5C /* CropMaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0544124E6755B00DF7D5C /* CropMaskView.swift */; };
+		2CC0544D24E6755C00DF7D5C /* HandlerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0544324E6755B00DF7D5C /* HandlerView.swift */; };
+		2CC0544E24E6755C00DF7D5C /* PryntTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC0544424E6755B00DF7D5C /* PryntTrimmerView.swift */; };
+		2CC0544F24E6755C00DF7D5C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 2CC0544524E6755B00DF7D5C /* LICENSE */; };
+		2CC0545024E6755C00DF7D5C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2CC0544624E6755B00DF7D5C /* README.md */; };
 		2CD7E52F24E6402300731201 /* CropCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7E52D24E6402300731201 /* CropCollectionViewCell.swift */; };
 		2CD7E53024E6402300731201 /* CropCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD7E52E24E6402300731201 /* CropCollectionViewCell.xib */; };
 		2CEFC07124D54CB90075941E /* DurationVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEFC07024D54CB90075941E /* DurationVideoController.swift */; };
@@ -230,6 +240,16 @@
 		2C95BE1824D5388B00D88660 /* CenterLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CenterLine.swift; sourceTree = "<group>"; };
 		2C95BE1924D5388B00D88660 /* TimelineScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineScroller.swift; sourceTree = "<group>"; };
 		2C95BE1A24D5388B00D88660 /* VideoTimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
+		2CC0543B24E6755B00DF7D5C /* AssetVideoScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetVideoScrollView.swift; sourceTree = "<group>"; };
+		2CC0543C24E6755B00DF7D5C /* AVAssetTimeSelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVAssetTimeSelector.swift; sourceTree = "<group>"; };
+		2CC0543D24E6755B00DF7D5C /* ThumbSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbSelectorView.swift; sourceTree = "<group>"; };
+		2CC0543F24E6755B00DF7D5C /* VideoCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCropView.swift; sourceTree = "<group>"; };
+		2CC0544024E6755B00DF7D5C /* VideoScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoScrollView.swift; sourceTree = "<group>"; };
+		2CC0544124E6755B00DF7D5C /* CropMaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropMaskView.swift; sourceTree = "<group>"; };
+		2CC0544324E6755B00DF7D5C /* HandlerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandlerView.swift; sourceTree = "<group>"; };
+		2CC0544424E6755B00DF7D5C /* PryntTrimmerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PryntTrimmerView.swift; sourceTree = "<group>"; };
+		2CC0544524E6755B00DF7D5C /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		2CC0544624E6755B00DF7D5C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2CD7E52D24E6402300731201 /* CropCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropCollectionViewCell.swift; sourceTree = "<group>"; };
 		2CD7E52E24E6402300731201 /* CropCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropCollectionViewCell.xib; sourceTree = "<group>"; };
 		2CEFC07024D54CB90075941E /* DurationVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DurationVideoController.swift; path = CustomCell/DurationVideoController.swift; sourceTree = "<group>"; };
@@ -284,6 +304,7 @@
 		19880EF924A5A30E009B52D6 /* demo */ = {
 			isa = PBXGroup;
 			children = (
+				2CC0543724E6755B00DF7D5C /* PryntTrimmerView */,
 				2C95BE1324D5388B00D88660 /* VideoTimelineView */,
 				1999560824AAEB8200303ECD /* Model */,
 				1999560524AAEB4D00303ECD /* View */,
@@ -594,6 +615,64 @@
 			path = VideoTimelineView;
 			sourceTree = "<group>";
 		};
+		2CC0543724E6755B00DF7D5C /* PryntTrimmerView */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0543824E6755B00DF7D5C /* PryntTrimmerView */,
+				2CC0544524E6755B00DF7D5C /* LICENSE */,
+				2CC0544624E6755B00DF7D5C /* README.md */,
+			);
+			name = PryntTrimmerView;
+			path = Pods/PryntTrimmerView;
+			sourceTree = SOURCE_ROOT;
+		};
+		2CC0543824E6755B00DF7D5C /* PryntTrimmerView */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0543924E6755B00DF7D5C /* Classes */,
+			);
+			path = PryntTrimmerView;
+			sourceTree = "<group>";
+		};
+		2CC0543924E6755B00DF7D5C /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0543A24E6755B00DF7D5C /* Parents */,
+				2CC0543D24E6755B00DF7D5C /* ThumbSelectorView.swift */,
+				2CC0543E24E6755B00DF7D5C /* Cropper */,
+				2CC0544224E6755B00DF7D5C /* Trimmer */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		2CC0543A24E6755B00DF7D5C /* Parents */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0543B24E6755B00DF7D5C /* AssetVideoScrollView.swift */,
+				2CC0543C24E6755B00DF7D5C /* AVAssetTimeSelector.swift */,
+			);
+			path = Parents;
+			sourceTree = "<group>";
+		};
+		2CC0543E24E6755B00DF7D5C /* Cropper */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0543F24E6755B00DF7D5C /* VideoCropView.swift */,
+				2CC0544024E6755B00DF7D5C /* VideoScrollView.swift */,
+				2CC0544124E6755B00DF7D5C /* CropMaskView.swift */,
+			);
+			path = Cropper;
+			sourceTree = "<group>";
+		};
+		2CC0544224E6755B00DF7D5C /* Trimmer */ = {
+			isa = PBXGroup;
+			children = (
+				2CC0544324E6755B00DF7D5C /* HandlerView.swift */,
+				2CC0544424E6755B00DF7D5C /* PryntTrimmerView.swift */,
+			);
+			path = Trimmer;
+			sourceTree = "<group>";
+		};
 		41EA384BB208E3C0F4BC0584 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -689,7 +768,9 @@
 				19CF1AA124B07D0500C70C24 /* TimeLineViewCell.xib in Resources */,
 				19DCB58524D5136100CA7D04 /* CollectionVCell.xib in Resources */,
 				19880F0424A5A314009B52D6 /* Assets.xcassets in Resources */,
+				2CC0544F24E6755C00DF7D5C /* LICENSE in Resources */,
 				19AF7D7D24A9D36300EBDF7F /* CollectionViewCell.xib in Resources */,
+				2CC0545024E6755C00DF7D5C /* README.md in Resources */,
 				2C8CDD9E24E526BB008F2564 /* video-1597283677.mp4 in Resources */,
 				19880F0224A5A30E009B52D6 /* Main.storyboard in Resources */,
 			);
@@ -774,17 +855,25 @@
 				19AF7D7C24A9D36300EBDF7F /* CollectionViewCell.swift in Sources */,
 				19DCB59324D51B2E00CA7D04 /* TbvViewController.swift in Sources */,
 				19D7E69424A5F27700FE5882 /* ImageViewController.swift in Sources */,
+				2CC0544A24E6755C00DF7D5C /* VideoCropView.swift in Sources */,
+				2CC0544824E6755C00DF7D5C /* AVAssetTimeSelector.swift in Sources */,
+				2CC0544C24E6755C00DF7D5C /* CropMaskView.swift in Sources */,
 				19DCB58D24D516A100CA7D04 /* TFVideoViewController.swift in Sources */,
+				2CC0544D24E6755C00DF7D5C /* HandlerView.swift in Sources */,
 				19DCB58B24D5140800CA7D04 /* AssetSelectionVideoViewController.swift in Sources */,
+				2CC0544B24E6755C00DF7D5C /* VideoScrollView.swift in Sources */,
 				2C95BE1D24D5388B00D88660 /* TimelineMeasure.swift in Sources */,
+				2CC0544E24E6755C00DF7D5C /* PryntTrimmerView.swift in Sources */,
 				2C95BE2024D5388B00D88660 /* TimelineScroller.swift in Sources */,
 				2C95BE2124D5388B00D88660 /* VideoTimelineView.swift in Sources */,
+				2CC0544724E6755C00DF7D5C /* AssetVideoScrollView.swift in Sources */,
 				19880F0F24A5B588009B52D6 /* VideoViewController.swift in Sources */,
 				2C95BE1E24D5388B00D88660 /* TimelineView.swift in Sources */,
 				19DCB58F24D518C800CA7D04 /* BackgroundVideoColorController.swift in Sources */,
 				2CD7E52F24E6402300731201 /* CropCollectionViewCell.swift in Sources */,
 				19CF1AA024B07D0500C70C24 /* TimeLineViewCell.swift in Sources */,
 				2C95BE1F24D5388B00D88660 /* CenterLine.swift in Sources */,
+				2CC0544924E6755C00DF7D5C /* ThumbSelectorView.swift in Sources */,
 				19DCB58724D5136100CA7D04 /* CollectionVCell.swift in Sources */,
 				19DCB58224D5136100CA7D04 /* BackgroundColorViewCell.swift in Sources */,
 				19DCB59124D51B2900CA7D04 /* DuplicateVideoViewController.swift in Sources */,

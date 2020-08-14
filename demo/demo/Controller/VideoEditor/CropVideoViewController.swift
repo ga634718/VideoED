@@ -197,13 +197,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         df.dateFormat = "yyyyMMddhhmmss"
         return df.string(from: Date())
     }
-//
-//    func load() {
-//        let asset = AVAsset(url: path as URL)
-//        videoCropView.asset = asset
-//        selectThumbView.asset = asset
-//        selectThumbView.delegate = self
-//    }
+
     override func loadAsset(_ asset: AVAsset) {
           videoCropView.asset = asset
            selectThumbView.asset = asset
@@ -225,7 +219,7 @@ extension CropVideoViewController: ThumbSelectorViewDelegate, UICollectionViewDe
        return cell
    }
    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    return CGSize(width:collectionView.frame.width/6.5, height: collectionView.frame.height/1.4)
+    return CGSize(width:collectionView.frame.width/6.1, height: collectionView.frame.height/1.5)
    }
    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
