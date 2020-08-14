@@ -12,11 +12,7 @@ class ImageViewController: UIViewController{
     @IBOutlet weak var imageViewBackGround: UIImageView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var collectionView: UICollectionView!
-    
-    
-    @IBAction func btnBack(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
-    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.image = img
@@ -25,6 +21,9 @@ class ImageViewController: UIViewController{
 //        imageView.adjustsImageSizeForAccessibilityContentSizeCategory = true
     }
     
+    @IBAction func btnBack(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
     
     @IBAction func btnSave(_ sender: Any) {
         let alert = UIAlertController(title: "Save image to your device ", message: "", preferredStyle: .alert)
@@ -39,7 +38,6 @@ class ImageViewController: UIViewController{
         }))
         present(alert, animated: true)
     }
-    
 }
 
 extension ImageViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
@@ -114,16 +112,8 @@ extension ImageViewController{
     }
     func initFuncCollectionView(){
         collectionView.register(UINib(nibName: "CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CollectionViewCell")
-        arr.append(ModelItem(id: 1,img: "trim", title: "RESIZE"))
+        arr.append(ModelItem(id: 1,img: "crop   ", title: "CROP"))
         arr.append(ModelItem(id: 2,img: "rotate", title: "ROTATE"))
-        arr.append(ModelItem(id: 3,img: "trim", title: "RESIZE"))
-        arr.append(ModelItem(id: 4,img: "rotate", title: "ROTATE"))
-        arr.append(ModelItem(id: 5,img: "trim", title: "RESIZE"))
-        arr.append(ModelItem(id: 6,img: "rotate", title: "ROTATE"))
-        arr.append(ModelItem(id: 7,img: "trim", title: "RESIZE"))
-        arr.append(ModelItem(id: 8,img: "rotate", title: "ROTATE"))
-        arr.append(ModelItem(id: 9,img: "trim", title: "RESIZE"))
-        arr.append(ModelItem(id: 10,img: "rotate", title: "ROTATE"))
     }
 }
 

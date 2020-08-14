@@ -11,6 +11,7 @@ import AVKit
 import ZKProgressHUD
 
 class VideoViewController: UIViewController {
+    
     var videoTimelineView : VideoTimelineView!
     var arrFuncCell = [ModelItem]()
     var originalVideoURL:NSURL!
@@ -21,78 +22,69 @@ class VideoViewController: UIViewController {
     var playButtonStatus: Bool = true
     var ratio1:CGFloat!
     var ratio2:CGFloat!
+    var quality: String = "1280:720"
+    var fileManage = HandleOutputFile()
+
+    
     @IBOutlet weak var collectionViewFunc: UICollectionView!
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var tlView: UIView!
     @IBOutlet weak var buttonPlay: UIButton!
-    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        videoPicker.sourceType = .photoLibrary
-//        videoPicker.delegate = self
-//        videoPicker.mediaTypes = ["public.movie"]
-//        videoPicker.modalPresentationStyle = .overFullScreen
-//        initVideoTimeline(url: originalVideoURL as URL)
-//        initFuncCollectionView()
-//        buttonPlay.isHidden = true
-//        fixedVideoURL = originalVideoURL as URL
-//        ratio1 = getVideoRatio(url: originalVideoURL as URL)
-//    }
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        videoTimelineView.player?.seek(to: CMTime.zero)
-//        videoTimelineView.play()
-//        setPlayButtonImage()
-//    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-//        videoPicker.sourceType = .photoLibrary
-//        videoPicker.delegate = self
-//        videoPicker.mediaTypes = ["public.movie"]
-//        videoPicker.modalPresentationStyle = .overFullScreen
-//
-//        initFuncCollectionView()
-//        buttonPlay.isHidden = true
-//        ratio1 = getVideoRatio(url: originalVideoURL as URL)
-        
+        videoPicker.sourceType = .photoLibrary
+        videoPicker.delegate = self
+        videoPicker.mediaTypes = ["public.movie"]
+        videoPicker.modalPresentationStyle = .overFullScreen
+        initVideoTimeline(url: originalVideoURL as URL)
+        initFuncCollectionView()
+        buttonPlay.isHidden = true
+        fixedVideoURL = originalVideoURL as URL
+        ratio1 = getVideoRatio(url: originalVideoURL as URL)
     }
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
-         videoPicker.sourceType = .photoLibrary
-         videoPicker.delegate = self
-         videoPicker.mediaTypes = ["public.movie"]
-         videoPicker.modalPresentationStyle = .overFullScreen
-         initVideoTimeline(url: originalVideoURL as URL)
-         initFuncCollectionView()
-         buttonPlay.isHidden = true
-         fixedVideoURL = originalVideoURL as URL
-         ratio1 = getVideoRatio(url: originalVideoURL as URL)
+//         videoPicker.sourceType = .photoLibrary
+//         videoPicker.delegate = self
+//         videoPicker.mediaTypes = ["public.movie"]
+//         videoPicker.modalPresentationStyle = .overFullScreen
+//         initVideoTimeline(url: originalVideoURL as URL)
+//         initFuncCollectionView()
+//         buttonPlay.isHidden = true
+//         fixedVideoURL = originalVideoURL as URL
+//         ratio1 = getVideoRatio(url: originalVideoURL as URL)
+            resetPlayer()
+            initVideoTimeline(url: fixedVideoURL)
+            print("video did appear")
      }
-     
-//
+    
 //    override func viewDidLayoutSubviews() {
 //        super.viewDidLayoutSubviews()
 //        initVideoTimeline(url: originalVideoURL as URL)
 //        buttonPlay.isHidden = true
 //        fixedVideoURL = originalVideoURL as URL?
 //    }
-
+    
     @IBAction func btnBack(_ sender: Any) {
         resetPlayer()
         self.navigationController?.popToRootViewController(animated: true)
     }
     
     @IBAction func btnSave(_ sender: Any) {
-        let alert = UIAlertController(title: "Save video to your device", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: {(action: UIAlertAction) in
-        }))
-        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: {(action: UIAlertAction) in
-            UISaveVideoAtPathToSavedPhotosAlbum(self.fixedVideoURL!.path, nil, nil, nil)
-            ZKProgressHUD.showSuccess()
-            ZKProgressHUD.dismiss(0.5)
-        }))
-        present(alert, animated: true)
+//        let alert = UIAlertController(title: "Save video to your device", message: "", preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: {(action: UIAlertAction) in
+//        }))
+//        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: {(action: UIAlertAction) in
+//            UISaveVideoAtPathToSavedPhotosAlbum(self.fixedVideoURL!.path, nil, nil, nil)
+//            ZKProgressHUD.showSuccess()
+//            ZKProgressHUD.dismiss(0.5)
+//        }))
+//        present(alert, animated: true)
+        videoTimelineView.stop()
+        setPlayButtonImage()
+        chooseQuality()
     }
     
     @IBAction func btnPlay(_ sender: Any) {
@@ -161,27 +153,27 @@ extension VideoViewController: UICollectionViewDelegate, UICollectionViewDataSou
 }
 
 extension VideoViewController : TimelinePlayStatusReceiver{
-      func initVideoTimeline(url : URL){
-            tlView.subviews.forEach({$0.removeFromSuperview()})
-            videoTimelineView = VideoTimelineView()
-            videoTimelineView.backgroundColor = UIColor.clear
-            videoTimelineView.frame = CGRect(x: 0, y: tlView.frame.size.height/4, width: tlView.frame.size.width, height: tlView.frame.size.height/2)
-            videoTimelineView.new(asset:AVAsset(url: url))
-            videoTimelineView.playStatusReceiver = self
-            videoTimelineView.repeatOn = true
-            videoTimelineView.setTrimIsEnabled(false)
-            videoTimelineView.setTrimmerIsHidden(true)
-            tlView.addSubview(videoTimelineView)
-            videoTimelineView.play()
-            playerLayer = AVPlayerLayer(player: videoTimelineView.player!)
-            playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-            playerLayer.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
-            playerLayer.frame = videoView.bounds
-    //        playerLayer.backgroundColor = UIColor.black.cgColor
-            self.videoView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
-            self.videoView.layer.addSublayer(playerLayer)
-            setPlayButtonImage()
-        }
+    func initVideoTimeline(url : URL){
+        tlView.subviews.forEach({$0.removeFromSuperview()})
+        videoTimelineView = VideoTimelineView()
+        videoTimelineView.backgroundColor = UIColor.clear
+        videoTimelineView.frame = CGRect(x: 0, y: tlView.frame.size.height/4, width: tlView.frame.size.width, height: tlView.frame.size.height/2)
+        videoTimelineView.new(asset:AVAsset(url: url))
+        videoTimelineView.playStatusReceiver = self
+        videoTimelineView.repeatOn = true
+        videoTimelineView.setTrimIsEnabled(false)
+        videoTimelineView.setTrimmerIsHidden(true)
+        tlView.addSubview(videoTimelineView)
+        videoTimelineView.play()
+        playerLayer = AVPlayerLayer(player: videoTimelineView.player!)
+        playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+        playerLayer.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
+        playerLayer.frame = videoView.bounds
+//        playerLayer.backgroundColor = UIColor.black.cgColor
+        self.videoView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
+        self.videoView.layer.addSublayer(playerLayer)
+        setPlayButtonImage()
+    }
     
     func videoTimelineStopped() {
         playButtonStatus = false
@@ -263,7 +255,7 @@ extension VideoViewController {
         removeFileIfExists(fileURL: url1)
         return furl
     }
-    
+
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
     }
@@ -281,12 +273,6 @@ extension VideoViewController {
         present(videoPicker, animated: true, completion: nil)
     }
     
-    func resolutionSizeForLocalVideo(url:URL) -> CGSize? {
-        guard let track = AVAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
-        let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: abs(size.width), height: abs(size.height))
-    }
-    
     func squareVideo(url : URL, ratio : CGFloat) -> URL{
         let furl1 = createUrlInApp(name: "video1.MOV")
         removeFileIfExists(fileURL: furl1)
@@ -297,12 +283,12 @@ extension VideoViewController {
         if ratio == 1 {
             return url
         }
-        else if ratio > 1{
+        else if ratio > 1 {
             let s = "-i \(furl1)  -aspect 1:1 -vf \"pad=iw:ih*\(ratio):(ow-iw)/2:(oh-ih)/2:black\" \(furl2)"
             print(s)
             MobileFFmpeg.execute(s)
         }
-        else{
+        else {
             let s = "-i \(furl1)  -aspect 1:1 -vf \"pad=iw/\(ratio):ih:(ow-iw)/2:(oh-ih)/2:black\" \(furl2)"
             print(s)
             MobileFFmpeg.execute(s)
@@ -310,7 +296,13 @@ extension VideoViewController {
         removeFileIfExists(fileURL: furl1)
         return furl2
     }
-
+    
+    func resolutionSizeForLocalVideo(url:URL) -> CGSize? {
+        guard let track = AVAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: abs(size.width), height: abs(size.height))
+    }
+    
     func currentDate()->String{
         let df = DateFormatter()
         df.dateFormat = "yyyyMMddhhmmss"
@@ -359,41 +351,49 @@ extension VideoViewController {
             break
         }
     }
+    
+    func chooseQuality() {
+        let view = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "QualityView") as! ConfigViewController
+        view.delegate = self
+        view.myQuality = quality
+        view.modalPresentationStyle = .overCurrentContext
+        self.present(view, animated: true)
+    }
 }
 
 extension VideoViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate, TransformCropVideoDelegate{
     
     func transformDuplicate(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
     }
     
     func transformReal(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
     }
     
     func transformBackground(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
     }
     
     func transformTrimVideo(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
     }
     
     
     func transformDuration(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
+        print("duration")
     }
     
     
     func transformCropVideo(url: URL) {
-        self.originalVideoURL = url as NSURL
+        self.fixedVideoURL = url
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         secondVideoURL = info[UIImagePickerController.InfoKey.mediaURL] as? NSURL
         ratio2 = getVideoRatio(url: secondVideoURL as URL)
-
-
+        
         fixedVideoURL = insertVideo()
         videoPicker.dismiss(animated: true, completion: nil)
     }
@@ -402,4 +402,42 @@ extension VideoViewController: UINavigationControllerDelegate, UIImagePickerCont
         videoPicker.dismiss(animated: true, completion: nil)
     }
 
+}
+
+extension VideoViewController: ChooseQualityDelegate{
+    func transformQuality(quality: String) {
+        self.quality = quality
+    }
+    
+    func isSaveVideo(isSave: Bool) {
+        if isSave {
+            
+//            videoTimelineView.stop()
+            
+            let time = currentDate()
+            let type = ".MOV"
+            
+            let output = self.fileManage.createUrlInApp(name: "\(time)\(type)")
+            
+//            let parameter = SaveParameter(volume: self.volume! * self.volumeRate, rate: self.rate! * self.steps, quality: self.quality)
+            
+            let str = "-y -i \(self.fixedVideoURL!) -filter_complex \"[0:v]scale=\(self.quality)[v]\" -map \"[v]\" -preset ultrafast \(output)"
+            
+            let serialQueue = DispatchQueue(label: "serialQueue")
+            
+            ZKProgressHUD.show()
+            
+            serialQueue.async {
+                MobileFFmpeg.execute(str)
+                let x = (self.fileManage.saveToDocumentDirectory(url: output))
+                self.fileManage.moveToLibrary(destinationURL: x)
+                self.fileManage.clearTempDirectory()
+                DispatchQueue.main.async {
+                    ZKProgressHUD.dismiss()
+                    ZKProgressHUD.showSuccess()
+                    ZKProgressHUD.dismiss(0.5)
+                }
+            }
+        }
+    }
 }

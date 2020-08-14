@@ -21,6 +21,7 @@ class ViewController: UIViewController{
     
     override func viewDidLoad() {
         setGradientBackground()
+        let _ = checkPhotoLibraryPermission()
         super.viewDidLoad()
     }
     
@@ -166,7 +167,6 @@ extension UIViewController {
 //        gradientLayer.frame = self.bounds
 //        gradientLayer.masksToBounds = false
 //        gradientLayer.cornerRadius = self.frame.height/2
-//
 //        self.layer.insertSublayer(gradientLayer, at: 0)
 //    }
 //
@@ -177,7 +177,6 @@ extension UIViewController {
 //        flash.toValue = 0.5
 //        flash.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 //        flash.autoreverses = true
-//
 //        self.layer.add(flash, forKey: nil)
 //    }
 //}

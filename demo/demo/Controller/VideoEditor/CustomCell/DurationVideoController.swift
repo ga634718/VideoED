@@ -7,10 +7,9 @@ import ZKProgressHUD
 class DurationVideoController: UIViewController {
     
     @IBOutlet weak var playButton: UIButton!
-      @IBOutlet weak var playerView: UIView!
-      @IBOutlet weak var trimmerView: TrimmerView!
+    @IBOutlet weak var playerView: UIView!
+    @IBOutlet weak var trimmerView: TrimmerView!
       
-    
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
@@ -23,8 +22,8 @@ class DurationVideoController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)

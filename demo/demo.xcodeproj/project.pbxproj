@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19327A2C24E3F2F800CA93C0 /* ConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19327A2B24E3F2F800CA93C0 /* ConfigViewController.swift */; };
+		19327A2E24E3F7E400CA93C0 /* HandleOuputFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19327A2D24E3F7E400CA93C0 /* HandleOuputFile.swift */; };
 		19367B3B24C53E4E00922363 /* x.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 19367B3A24C53E4E00922363 /* x.mp3 */; };
 		19880EFB24A5A30E009B52D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19880EFA24A5A30E009B52D6 /* AppDelegate.swift */; };
 		19880EFF24A5A30E009B52D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19880EFE24A5A30E009B52D6 /* ViewController.swift */; };
@@ -63,6 +65,8 @@
 /* Begin PBXFileReference section */
 		19162B2C24AAE22C007D5603 /* testVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = testVideo.mp4; sourceTree = "<group>"; };
 		19162B2D24AAE3E3007D5603 /* small.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = small.mp4; sourceTree = "<group>"; };
+		19327A2B24E3F2F800CA93C0 /* ConfigViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigViewController.swift; sourceTree = "<group>"; };
+		19327A2D24E3F7E400CA93C0 /* HandleOuputFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandleOuputFile.swift; sourceTree = "<group>"; };
 		19367B3A24C53E4E00922363 /* x.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = x.mp3; sourceTree = "<group>"; };
 		19798E9124C13FEC00831644 /* demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "demo-Bridging-Header.h"; sourceTree = "<group>"; };
 		19880EF724A5A30E009B52D6 /* demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -314,6 +318,8 @@
 		1999560724AAEB6800303ECD /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				19327A2D24E3F7E400CA93C0 /* HandleOuputFile.swift */,
+				19327A2B24E3F2F800CA93C0 /* ConfigViewController.swift */,
 				199C17B124D41706007206D2 /* VideoEditor */,
 				19AF7D7E24A9D55B00EBDF7F /* ModelItem.swift */,
 				19880EFA24A5A30E009B52D6 /* AppDelegate.swift */,
@@ -775,7 +781,9 @@
 				2C95BE1F24D5388B00D88660 /* CenterLine.swift in Sources */,
 				19DCB58724D5136100CA7D04 /* CollectionVCell.swift in Sources */,
 				19DCB58224D5136100CA7D04 /* BackgroundColorViewCell.swift in Sources */,
+				19327A2E24E3F7E400CA93C0 /* HandleOuputFile.swift in Sources */,
 				19DCB59124D51B2900CA7D04 /* DuplicateVideoViewController.swift in Sources */,
+				19327A2C24E3F2F800CA93C0 /* ConfigViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
