@@ -27,21 +27,21 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     var isSave = false
     var delegate: TransformCropVideoDelegate!
     var array = [RatioCrop]()
+    var newRatio: CGSize?
     
     override func viewDidLoad() {
         super.viewDidLoad()
        selectRatio.register(UINib(nibName: "CropCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CropCollectionViewCell")
         array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        array.append(RatioCrop(ratio: "1:1"))
-        
+        array.append(RatioCrop(ratio: "4:5"))
+        array.append(RatioCrop(ratio: "16:9"))
+        array.append(RatioCrop(ratio: "9:16"))
+        array.append(RatioCrop(ratio: "3:4"))
+        array.append(RatioCrop(ratio: "4:3"))
+        array.append(RatioCrop(ratio: "2:3"))
+        array.append(RatioCrop(ratio: "3:2"))
+        array.append(RatioCrop(ratio: "2:1"))
+        array.append(RatioCrop(ratio: "1:2"))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -212,7 +212,59 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     
 }
 
-extension CropVideoViewController: ThumbSelectorViewDelegate {
+extension CropVideoViewController: ThumbSelectorViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+   
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+       return array.count
+   }
+   
+   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CropCollectionViewCell", for: indexPath) as! CropCollectionViewCell
+       let data = array[indexPath.row]
+    cell.initView(ratio: data.ratio)
+       return cell
+   }
+   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    return CGSize(width:collectionView.frame.width/6.5, height: collectionView.frame.height/1.4)
+   }
+   
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0:
+            newRatio = CGSize(width: 1, height: 1)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 1:
+            newRatio = CGSize(width: 4, height: 5)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 2:
+            newRatio = CGSize(width: 16, height: 9)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 3:
+            newRatio = CGSize(width: 9, height: 16)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 4:
+            newRatio = CGSize(width: 3, height: 4)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 5:
+            newRatio = CGSize(width: 4, height: 3)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 6:
+            newRatio = CGSize(width: 2, height: 3)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 7:
+            newRatio = CGSize(width: 3, height: 2)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 8:
+            newRatio = CGSize(width: 2, height: 1)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        case 9:
+            newRatio = CGSize(width: 1, height: 2)
+            videoCropView.setAspectRatio(newRatio!, animated: true)
+        default:
+            print(indexPath.row)
+       }
+   }
+    
    
     
     func didChangeThumbPosition(_ imageTime: CMTime) {

@@ -1267,9 +1267,9 @@
                                         </constraints>
                                     </view>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="HBx-FM-iOX">
-                                        <rect key="frame" x="0.0" y="228" width="375" height="64"/>
+                                        <rect key="frame" x="5" y="228" width="365" height="64"/>
                                         <color key="backgroundColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
-                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="KZJ-sO-U2Y">
+                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="5" minimumInteritemSpacing="5" id="KZJ-sO-U2Y">
                                             <size key="itemSize" width="128" height="128"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -1277,8 +1277,8 @@
                                         </collectionViewFlowLayout>
                                         <cells/>
                                         <connections>
-                                            <outlet property="dataSource" destination="NZ3-Sz-gNB" id="t01-cb-9Zb"/>
-                                            <outlet property="delegate" destination="NZ3-Sz-gNB" id="URF-t5-Me0"/>
+                                            <outlet property="dataSource" destination="kNW-1u-hlb" id="ZyB-zf-fEM"/>
+                                            <outlet property="delegate" destination="kNW-1u-hlb" id="7xm-zv-Zfo"/>
                                         </connections>
                                     </collectionView>
                                 </subviews>
@@ -1287,12 +1287,12 @@
                                     <constraint firstItem="JZF-KR-P9l" firstAttribute="top" secondItem="EMY-LF-TVZ" secondAttribute="bottom" id="2ar-Yz-YR1"/>
                                     <constraint firstItem="EMY-LF-TVZ" firstAttribute="top" secondItem="vqB-9c-zQl" secondAttribute="top" id="3Rc-v2-JOq"/>
                                     <constraint firstItem="JZF-KR-P9l" firstAttribute="leading" secondItem="vqB-9c-zQl" secondAttribute="leading" id="CF0-wT-aq2"/>
-                                    <constraint firstItem="HBx-FM-iOX" firstAttribute="leading" secondItem="vqB-9c-zQl" secondAttribute="leading" id="HpU-SV-RuI"/>
+                                    <constraint firstItem="HBx-FM-iOX" firstAttribute="leading" secondItem="vqB-9c-zQl" secondAttribute="leading" constant="5" id="HpU-SV-RuI"/>
                                     <constraint firstAttribute="trailing" secondItem="EMY-LF-TVZ" secondAttribute="trailing" id="MtD-av-8CU"/>
                                     <constraint firstAttribute="trailing" secondItem="JZF-KR-P9l" secondAttribute="trailing" id="NzH-Dw-RhQ"/>
                                     <constraint firstAttribute="bottom" secondItem="HBx-FM-iOX" secondAttribute="bottom" id="Rqw-G8-Mfw"/>
                                     <constraint firstItem="EMY-LF-TVZ" firstAttribute="leading" secondItem="vqB-9c-zQl" secondAttribute="leading" id="Wdu-fG-z4U"/>
-                                    <constraint firstAttribute="trailing" secondItem="HBx-FM-iOX" secondAttribute="trailing" id="gm5-tm-Cp6"/>
+                                    <constraint firstAttribute="trailing" secondItem="HBx-FM-iOX" secondAttribute="trailing" constant="5" id="gm5-tm-Cp6"/>
                                     <constraint firstItem="HBx-FM-iOX" firstAttribute="height" secondItem="JZF-KR-P9l" secondAttribute="height" multiplier="0.8" id="htk-Nn-tB3"/>
                                     <constraint firstAttribute="bottom" secondItem="JZF-KR-P9l" secondAttribute="bottom" id="iyZ-h2-dG2"/>
                                 </constraints>
