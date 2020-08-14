@@ -57,6 +57,8 @@
 		2C95BE1F24D5388B00D88660 /* CenterLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1824D5388B00D88660 /* CenterLine.swift */; };
 		2C95BE2024D5388B00D88660 /* TimelineScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1924D5388B00D88660 /* TimelineScroller.swift */; };
 		2C95BE2124D5388B00D88660 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1A24D5388B00D88660 /* VideoTimelineView.swift */; };
+		2CD7E52F24E6402300731201 /* CropCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7E52D24E6402300731201 /* CropCollectionViewCell.swift */; };
+		2CD7E53024E6402300731201 /* CropCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD7E52E24E6402300731201 /* CropCollectionViewCell.xib */; };
 		2CEFC07124D54CB90075941E /* DurationVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEFC07024D54CB90075941E /* DurationVideoController.swift */; };
 		9EFDF37CAECA0840CFDEC477 /* Pods_demo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EEC1E8A3D9D7E6BA25B7BC2 /* Pods_demo.framework */; };
 /* End PBXBuildFile section */
@@ -228,6 +230,8 @@
 		2C95BE1824D5388B00D88660 /* CenterLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CenterLine.swift; sourceTree = "<group>"; };
 		2C95BE1924D5388B00D88660 /* TimelineScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineScroller.swift; sourceTree = "<group>"; };
 		2C95BE1A24D5388B00D88660 /* VideoTimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
+		2CD7E52D24E6402300731201 /* CropCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropCollectionViewCell.swift; sourceTree = "<group>"; };
+		2CD7E52E24E6402300731201 /* CropCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropCollectionViewCell.xib; sourceTree = "<group>"; };
 		2CEFC07024D54CB90075941E /* DurationVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DurationVideoController.swift; path = CustomCell/DurationVideoController.swift; sourceTree = "<group>"; };
 		7EEC1E8A3D9D7E6BA25B7BC2 /* Pods_demo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_demo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4357C5C7544C36591DC3566 /* Pods-demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demo.debug.xcconfig"; path = "Target Support Files/Pods-demo/Pods-demo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -566,10 +570,12 @@
 			children = (
 				19DCB57C24D5136100CA7D04 /* BackgroundColorViewCell.swift */,
 				19DCB57D24D5136100CA7D04 /* BackgroundColorViewCell.xib */,
+				19DCB58124D5136100CA7D04 /* CollectionVCell.swift */,
 				19DCB57F24D5136100CA7D04 /* CollectionVCell.xib */,
 				2C8CDD9D24E526BB008F2564 /* video-1597283677.mp4 */,
 				19DCB58024D5136100CA7D04 /* AB.mov */,
-				19DCB58124D5136100CA7D04 /* CollectionVCell.swift */,
+				2CD7E52D24E6402300731201 /* CropCollectionViewCell.swift */,
+				2CD7E52E24E6402300731201 /* CropCollectionViewCell.xib */,
 			);
 			path = CustomCell;
 			sourceTree = "<group>";
@@ -674,6 +680,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19367B3B24C53E4E00922363 /* x.mp3 in Resources */,
+				2CD7E53024E6402300731201 /* CropCollectionViewCell.xib in Resources */,
 				19DCB58624D5136100CA7D04 /* AB.mov in Resources */,
 				1999560924AAEDA500303ECD /* testVideo.mp4 in Resources */,
 				19DCB58324D5136100CA7D04 /* BackgroundColorViewCell.xib in Resources */,
@@ -775,6 +782,7 @@
 				19880F0F24A5B588009B52D6 /* VideoViewController.swift in Sources */,
 				2C95BE1E24D5388B00D88660 /* TimelineView.swift in Sources */,
 				19DCB58F24D518C800CA7D04 /* BackgroundVideoColorController.swift in Sources */,
+				2CD7E52F24E6402300731201 /* CropCollectionViewCell.swift in Sources */,
 				19CF1AA024B07D0500C70C24 /* TimeLineViewCell.swift in Sources */,
 				2C95BE1F24D5388B00D88660 /* CenterLine.swift in Sources */,
 				19DCB58724D5136100CA7D04 /* CollectionVCell.swift in Sources */,

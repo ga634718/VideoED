@@ -18,6 +18,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     
     @IBOutlet weak var videoCropView: VideoCropView!
     @IBOutlet weak var selectThumbView: ThumbSelectorView!
+    @IBOutlet weak var selectRatio: UICollectionView!
     
     
     var player: AVPlayer?
@@ -25,14 +26,27 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     var cropURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!
+    var array = [RatioCrop]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       selectRatio.register(UINib(nibName: "CropCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CropCollectionViewCell")
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        array.append(RatioCrop(ratio: "1:1"))
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        videoCropView.setAspectRatio(CGSize(width: 3, height: 2), animated: false)
+        videoCropView.setAspectRatio(CGSize(width: 16, height: 9), animated: false)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
     }
@@ -50,9 +64,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func rotate(_ sender: Any) {
-        
-        let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 2, height: 3) :
-            CGSize(width: 4, height: 3)
+        let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 16, height: 9) :
+        CGSize(width: 9, height: 16)
         videoCropView.setAspectRatio(newRatio, animated: true)
     }
     
@@ -127,8 +140,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
                 ZKProgressHUD.dismiss(0.5)
                 ZKProgressHUD.showSuccess()
                 self.path = self.cropURL as NSURL?
-                let a = AVAsset(url: self.path as URL)
-                self.loadAsset(a)
+                let videoCrop = AVAsset(url: self.path as URL)
+                self.loadAsset(videoCrop)
             }       
         }
     }
@@ -196,9 +209,11 @@ class CropVideoViewController: AssetSelectionVideoViewController {
            selectThumbView.asset = asset
            selectThumbView.delegate = self
        }
+    
 }
 
 extension CropVideoViewController: ThumbSelectorViewDelegate {
+   
     
     func didChangeThumbPosition(_ imageTime: CMTime) {
         videoCropView.player?.seek(to: imageTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)

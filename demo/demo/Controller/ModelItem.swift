@@ -22,3 +22,7 @@ struct PreviewItem {
 struct ModelBackgroundColor {
     var uiColor: UIColor
 }
+
+struct RatioCrop {
+    var ratio: String
+}

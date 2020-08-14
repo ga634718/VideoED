@@ -1,10 +1,3 @@
-//
-//  ConfigViewController.swift
-//  AudioControllerFFMPEG
-//
-//  Created by Viet Hoang on 7/23/20.
-//  Copyright © 2020 Viet Hoang. All rights reserved.
-//
 
 import UIKit
 
