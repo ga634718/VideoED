@@ -5,7 +5,6 @@ import PryntTrimmerView
 import ZKProgressHUD
 
 class TrimmerViewController: AssetSelectionVideoViewController {
-    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var LblStartTime: UILabel!
@@ -27,8 +26,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
-        trimmerView.asset = asset
-        trimmerView.delegate = self
+        setlabel()
     }
     
     
@@ -189,6 +187,11 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             return
         }
     }
+    
+    func setlabel() {
+        LblStartTime.text = trimmerView.startTime?.positionalTime
+        LblEndTime.text = trimmerView.endTime?.positionalTime
+    }
 
     func startPlaybackTimeChecker() {
         
@@ -225,13 +228,13 @@ extension TrimmerViewController: TrimmerViewDelegate {
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         player?.play()
         startPlaybackTimeChecker()
+        setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
         player?.pause()
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        let duration = (trimmerView.endTime! - trimmerView.startTime!).seconds
-        print(duration)
+        setlabel()
     }
 }

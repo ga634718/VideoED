@@ -140,39 +140,6 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         }
     }
     
-    private func getTransform(for videoTrack: AVAssetTrack) -> CGAffineTransform {
-        
-        let renderSize = CGSize(width: 16 * videoCropView.aspectRatio.width * 18,
-                                height: 16 * videoCropView.aspectRatio.height * 18)
-        let cropFrame = videoCropView.getImageCropFrame()
-        let renderScale = renderSize.width / cropFrame.width
-        let offset = CGPoint(x: -cropFrame.origin.x, y: -cropFrame.origin.y)
-        let rotation = atan2(videoTrack.preferredTransform.b, videoTrack.preferredTransform.a)
-        
-        var rotationOffset = CGPoint(x: 0, y: 0)
-        
-        if videoTrack.preferredTransform.b == -1.0 {
-            rotationOffset.y = videoTrack.naturalSize.width
-        } else if videoTrack.preferredTransform.c == -1.0 {
-            rotationOffset.x = videoTrack.naturalSize.height
-        } else if videoTrack.preferredTransform.a == -1.0 {
-            rotationOffset.x = videoTrack.naturalSize.width
-            rotationOffset.y = videoTrack.naturalSize.height
-        }
-        
-        var transform = CGAffineTransform.identity
-        transform = transform.scaledBy(x: renderScale, y: renderScale)
-        transform = transform.translatedBy(x: offset.x + rotationOffset.x, y: offset.y + rotationOffset.y)
-        transform = transform.rotated(by: rotation)
-        
-        
-        print("track size \(videoTrack.naturalSize)")
-        print("preferred Transform = \(videoTrack.preferredTransform)")
-        print("rotation angle \(rotation)")
-        print("rotation offset \(rotationOffset)")
-        print("actual Transform = \(transform)")
-        return transform
-    }
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
     }

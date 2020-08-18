@@ -7,12 +7,10 @@ import ZKProgressHUD
 class DuplicateVideoViewController: AssetSelectionVideoViewController {
     
     @IBOutlet weak var selectAssetButton: UIButton!
-    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var playerView: UIView!
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var LblStartTime: UILabel!
     @IBOutlet weak var LblEndTime: UILabel!
-    
     
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
@@ -30,8 +28,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
-        trimmerView.asset = asset
-        trimmerView.delegate = self
+        setlabel()
     }
     
     @IBAction func back(_ sender: Any) {
@@ -55,15 +52,15 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         let dr = duration - endTime
         let dr2 = endTime + durationTime
         
-        let url = createUrlInApp(name: "cut.mp4")
+        let url = createUrlInApp(name: "cutvideo1.mp4")
         removeFileIfExists(fileURL: url)
-        let url1 = createUrlInApp(name: "cut1.mp4")
+        let url1 = createUrlInApp(name: "cutvideo2.mp4")
         removeFileIfExists(fileURL: url1)
-        let url2 = createUrlInApp(name: "cut2.mp4")
+        let url2 = createUrlInApp(name: "cutvideo3.mp4")
         removeFileIfExists(fileURL: url2)
-        let furl = createUrlInApp(name: "video.mp4")
+        let furl = createUrlInApp(name: "videodemo1.mp4")
         removeFileIfExists(fileURL: furl)
-        let furl1 = createUrlInApp(name: "video1.mp4")
+        let furl1 = createUrlInApp(name: "videodemo2.mp4")
         removeFileIfExists(fileURL: furl1)
         let audio = createUrlInApp(name: "audio.mp4")
         removeFileIfExists(fileURL: audio)
@@ -175,7 +172,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             let cmdfinal = "-i \(furl) -i \(audio) -c copy -map 0:v -map 1:a \(final)"
             let cmdfinal2 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
             
-            
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
             }
@@ -253,7 +249,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             (sender as AnyObject).setImage(UIImage(named: "Pause"), for: UIControl.State.normal)
             startPlaybackTimeChecker()
         } else {
-            (sender as AnyObject).setImage(UIImage(named: "Play"), for: UIControl.State.normal)
+            (sender as AnyObject).setImage(UIImage(named: "icon_play"), for: UIControl.State.normal)
             player.pause()
             stopPlaybackTimeChecker()
         }
@@ -263,6 +259,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         addVideoPlayer(with: asset, playerView: playerView)
         trimmerView.asset = asset
         trimmerView.delegate = self
+//        trimmerView.handleWidth = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+//        trimmerView.maxDuration = Double(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
     }
     
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
@@ -278,6 +276,11 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         //        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
         playerView.layer.addSublayer(layer)
+    }
+    
+    func setlabel(){
+        LblStartTime.text = trimmerView.startTime?.positionalTime
+        LblEndTime.text = trimmerView.endTime?.positionalTime
     }
     
     @objc func itemDidFinishPlaying(_ notification: Notification) {
@@ -330,14 +333,14 @@ extension DuplicateVideoViewController: TrimmerViewDelegate, PassQualityDelegate
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         player?.play()
         startPlaybackTimeChecker()
+        setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
         player?.pause()
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        let duration = (trimmerView.endTime! - trimmerView.startTime!).seconds
-        print(duration)
+        setlabel()
     }
     func chooseQuality() {
         let view = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ConfigView") as! TbvViewController

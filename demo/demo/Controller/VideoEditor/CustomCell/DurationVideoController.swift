@@ -27,20 +27,18 @@ class DurationVideoController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         customizeSlider(sliderName: slider)
-        
+        rate = 1
+        player?.pause()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
-        trimmerView.asset = asset
-        trimmerView.delegate = self
-        valueSpeed()
-        player?.rate = 1
+        setlabel()
     }
     
     @IBAction func back(_ sender: Any) {
-        player = nil
+        player?.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
@@ -48,6 +46,8 @@ class DurationVideoController: UIViewController {
     
     @IBAction func changeSpeed(_ sender: UISlider) {
         slider.value = roundf(slider.value)
+        rate = slider.value * 0.5
+        player?.rate = rate
     }
     
     @IBAction func save(_ sender: Any) {
@@ -55,7 +55,7 @@ class DurationVideoController: UIViewController {
             debugPrint("Video not found")
             return
         }
-        player = nil
+        player?.pause()
         isSave = true
         
         let furl = createUrlInApp(name: "audio.MOV")
@@ -146,6 +146,11 @@ class DurationVideoController: UIViewController {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
     }
     
+    func setlabel() {
+        LblStartTime.text = trimmerView.startTime?.positionalTime
+        LblEndTime.text = trimmerView.endTime?.positionalTime
+    }
+    
     func removeFileIfExists(fileURL: URL) {
         do {
             try FileManager.default.removeItem(at: fileURL)
@@ -169,32 +174,6 @@ class DurationVideoController: UIViewController {
         
     }
     
-    func valueSpeed(){
-        if slider.value == 0
-        {
-            player?.rate = 0
-        }
-        if slider.value == 0.5
-        {
-            rate = 0.5
-            player?.rate = 0.5
-        }
-        if slider.value == 1
-        {
-            rate = 1
-            player?.rate = 1
-        }
-        if slider.value == 1.5
-        {
-            rate = 1.5
-            player?.rate = 1.5
-        }
-        if slider.value == 2
-        {
-            rate = 2
-            player?.rate = 2
-        }
-    }
     
     func startPlaybackTimeChecker() {
         
@@ -231,13 +210,13 @@ extension DurationVideoController: TrimmerViewDelegate {
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         player?.play()
         startPlaybackTimeChecker()
+        setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
         player?.pause()
         player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        let duration = (trimmerView.endTime! - trimmerView.startTime!).seconds
-        print(duration)
+        setlabel()
     }
 }
