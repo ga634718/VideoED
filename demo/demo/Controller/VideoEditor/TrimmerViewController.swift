@@ -33,8 +33,9 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     
     @IBAction func back(_ sender: Any) {
-        player?.pause()
-        self.navigationController?.popViewController(animated: true)  
+        player = nil
+        clearTempDirectory()
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func save(_ sender: Any) {
@@ -119,6 +120,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut)
                 MobileFFmpeg.execute(cut2)
                 MobileFFmpeg.execute(cut3)
+                self.removeFileIfExists(fileURL: url)
+                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {
@@ -186,12 +189,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             return
         }
     }
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
-    }
-    
+
     func startPlaybackTimeChecker() {
         
         stopPlaybackTimeChecker()

@@ -59,6 +59,8 @@ class BackgroundVideoColorController: UIViewController {
     }
     
     @IBAction func back(_ sender: Any) {
+        player = nil
+        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -138,11 +140,6 @@ class BackgroundVideoColorController: UIViewController {
         }
     }
     
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
-    }
     func squareVideo(url : URL, ratio : CGFloat) -> URL{
         let furl = createUrlInApp(name: "video1.MOV")
         removeFileIfExists(fileURL: furl)

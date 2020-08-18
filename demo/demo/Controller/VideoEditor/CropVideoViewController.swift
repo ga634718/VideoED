@@ -52,7 +52,8 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        
+        player = nil
+        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -62,13 +63,6 @@ class CropVideoViewController: AssetSelectionVideoViewController {
         }
         self.navigationController?.popViewController(animated: true)
     }
-    
-    @IBAction func rotate(_ sender: Any) {
-        let newRatio = videoCropView.aspectRatio.width < videoCropView.aspectRatio.height ? CGSize(width: 16, height: 9) :
-        CGSize(width: 9, height: 16)
-        videoCropView.setAspectRatio(newRatio, animated: true)
-    }
-    
     
     @IBAction func crop(_ sender: Any) {
         
@@ -190,12 +184,6 @@ class CropVideoViewController: AssetSelectionVideoViewController {
             print(error.localizedDescription)
             return
         }
-    }
-    
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
     }
 
     override func loadAsset(_ asset: AVAsset) {

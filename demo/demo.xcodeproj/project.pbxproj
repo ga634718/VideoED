@@ -49,6 +49,8 @@
 		19DCB59324D51B2E00CA7D04 /* TbvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DCB59224D51B2E00CA7D04 /* TbvViewController.swift */; };
 		19DCB59524D51BAD00CA7D04 /* AVPlayer+isPlaying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DCB59424D51BAD00CA7D04 /* AVPlayer+isPlaying.swift */; };
 		19DCB59724D51C0F00CA7D04 /* TrimmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DCB59624D51C0F00CA7D04 /* TrimmerViewController.swift */; };
+		2C06244F24EB75AC00B7388B /* Func.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C06244E24EB75AC00B7388B /* Func.swift */; };
+		2C06245124EB827500B7388B /* DesignableSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C06245024EB827500B7388B /* DesignableSlider.swift */; };
 		2C8CDD9E24E526BB008F2564 /* video-1597283677.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 2C8CDD9D24E526BB008F2564 /* video-1597283677.mp4 */; };
 		2C95BE1B24D5388B00D88660 /* TrimView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1424D5388B00D88660 /* TrimView.swift */; };
 		2C95BE1C24D5388B00D88660 /* FrameImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C95BE1524D5388B00D88660 /* FrameImagesView.swift */; };
@@ -232,6 +234,8 @@
 		19DCB59224D51B2E00CA7D04 /* TbvViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TbvViewController.swift; sourceTree = "<group>"; };
 		19DCB59424D51BAD00CA7D04 /* AVPlayer+isPlaying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVPlayer+isPlaying.swift"; sourceTree = "<group>"; };
 		19DCB59624D51C0F00CA7D04 /* TrimmerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrimmerViewController.swift; sourceTree = "<group>"; };
+		2C06244E24EB75AC00B7388B /* Func.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Func.swift; sourceTree = "<group>"; };
+		2C06245024EB827500B7388B /* DesignableSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignableSlider.swift; sourceTree = "<group>"; };
 		2C8CDD9D24E526BB008F2564 /* video-1597283677.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "video-1597283677.mp4"; sourceTree = "<group>"; };
 		2C95BE1424D5388B00D88660 /* TrimView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrimView.swift; sourceTree = "<group>"; };
 		2C95BE1524D5388B00D88660 /* FrameImagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameImagesView.swift; sourceTree = "<group>"; };
@@ -372,6 +376,8 @@
 				19DCB58A24D5140800CA7D04 /* AssetSelectionVideoViewController.swift */,
 				19DCB58824D5136700CA7D04 /* CropVideoViewController.swift */,
 				199C17B424D4187B007206D2 /* Album.swift */,
+				2C06244E24EB75AC00B7388B /* Func.swift */,
+				2C06245024EB827500B7388B /* DesignableSlider.swift */,
 			);
 			path = VideoEditor;
 			sourceTree = "<group>";
@@ -863,10 +869,12 @@
 				19DCB58B24D5140800CA7D04 /* AssetSelectionVideoViewController.swift in Sources */,
 				2CC0544B24E6755C00DF7D5C /* VideoScrollView.swift in Sources */,
 				2C95BE1D24D5388B00D88660 /* TimelineMeasure.swift in Sources */,
+				2C06244F24EB75AC00B7388B /* Func.swift in Sources */,
 				2CC0544E24E6755C00DF7D5C /* PryntTrimmerView.swift in Sources */,
 				2C95BE2024D5388B00D88660 /* TimelineScroller.swift in Sources */,
 				2C95BE2124D5388B00D88660 /* VideoTimelineView.swift in Sources */,
 				2CC0544724E6755C00DF7D5C /* AssetVideoScrollView.swift in Sources */,
+				2C06245124EB827500B7388B /* DesignableSlider.swift in Sources */,
 				19880F0F24A5B588009B52D6 /* VideoViewController.swift in Sources */,
 				2C95BE1E24D5388B00D88660 /* TimelineView.swift in Sources */,
 				19DCB58F24D518C800CA7D04 /* BackgroundVideoColorController.swift in Sources */,

@@ -35,8 +35,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        player?.pause()
-        self.navigationController?.popViewController(animated: true)    
+        player = nil
+        clearTempDirectory()
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func save(_ sender: Any) {
@@ -45,35 +46,37 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             return
         }
         
-        let st = CGFloat(CMTimeGetSeconds(trimmerView.startTime!))
-        let st1 = CGFloat(CMTimeGetSeconds(trimmerView.endTime!))
-        let tl = CGFloat(CMTimeGetSeconds((trimmerView.endTime!) - trimmerView.startTime!))
-        let end = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
-        let crtime = CGFloat(CMTimeGetSeconds((player?.currentTime())!))
-        let curr = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
-        let dr = curr - crtime
-        let dr2 = crtime + tl
+        let startTime = CGFloat(CMTimeGetSeconds(trimmerView.startTime!))
+        let endTime = CGFloat(CMTimeGetSeconds(trimmerView.endTime!))
+        let durationTime = CGFloat(CMTimeGetSeconds((trimmerView.endTime!) - trimmerView.startTime!))
+        let lateTime = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
+        //        let currentTime = CGFloat(CMTimeGetSeconds((player?.currentTime())!))
+        let duration = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+        let dr = duration - endTime
+        let dr2 = endTime + durationTime
         
-        let url = createUrlInApp(name: "cut.MOV")
+        let url = createUrlInApp(name: "cut.mp4")
         removeFileIfExists(fileURL: url)
-        let url1 = createUrlInApp(name: "cut1.MOV")
+        let url1 = createUrlInApp(name: "cut1.mp4")
         removeFileIfExists(fileURL: url1)
-        let url2 = createUrlInApp(name: "cut2.MOV")
+        let url2 = createUrlInApp(name: "cut2.mp4")
         removeFileIfExists(fileURL: url2)
-        let furl = createUrlInApp(name: "video.MOV")
+        let furl = createUrlInApp(name: "video.mp4")
         removeFileIfExists(fileURL: furl)
-        let furl1 = createUrlInApp(name: "video1.MOV")
+        let furl1 = createUrlInApp(name: "video1.mp4")
         removeFileIfExists(fileURL: furl1)
-        let audio2 = createUrlInApp(name: "audio.MOV")
+        let audio = createUrlInApp(name: "audio.mp4")
+        removeFileIfExists(fileURL: audio)
+        let audio2 = createUrlInApp(name: "audio2.mp4")
         removeFileIfExists(fileURL: audio2)
-        let final = createUrlInApp(name: "\(currentDate()).MOV")
+        let final = createUrlInApp(name: "\(currentDate()).mp4")
         removeFileIfExists(fileURL: final)
         
         if quality == "None" {
-            if st == 0 {
-                let cut1 = "-ss 0 -i \(filePath) -to \(tl) -c copy \(url1)"
+            if startTime == 0 {
+                let cut1 = "-ss 0 -i \(filePath) -to \(durationTime) -c copy \(url1)"
                 MobileFFmpeg.execute(cut1)
-                let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
+                let cut2 = "-ss \(endTime) -i \(filePath) -to \(lateTime) -c copy \(url2)"
                 MobileFFmpeg.execute(cut2)
                 let duplicate = "-i \(url1) -i \(url1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
                 
@@ -83,6 +86,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
                     MobileFFmpeg.execute(duplicate)
+                    self.removeFileIfExists(fileURL: url1)
+                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -92,11 +97,11 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
-            } else if st1 == curr {
-                let cut1 = "-ss \(st) -i \(filePath) -to \(tl) -c copy \(url1)"
+            } else if endTime == duration {
+                let cut1 = "-ss \(startTime) -i \(filePath) -to \(durationTime) -c copy \(url1)"
                 MobileFFmpeg.execute(cut1)
                 
-                let cut2 = "-ss 0 -i \(filePath) -to \(st) -c copy \(url2)"
+                let cut2 = "-ss 0 -i \(filePath) -to \(startTime) -c copy \(url2)"
                 MobileFFmpeg.execute(cut2)
                 print(url2)
                 
@@ -107,6 +112,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
                     MobileFFmpeg.execute(duplicate)
+                    self.removeFileIfExists(fileURL: url1)
+                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -117,9 +124,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     }
                 }
             } else {
-                let cut = "-ss 0 -i \(filePath) -to \(st) -c copy \(url)"
-                let cut1 = "-ss \(st) -i \(filePath) -to \(tl) -c copy \(url1)"
-                let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
+                let cut = "-ss 0 -i \(filePath) -to \(startTime) -c copy \(url)"
+                let cut1 = "-ss \(startTime) -i \(filePath) -to \(durationTime) -c copy \(url1)"
+                let cut2 = "-ss \(endTime) -i \(filePath) -to \(lateTime) -c copy \(url2)"
                 let cut3 = "-i \(url) -i \(url1) -i \(url1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] [3:v:0] [3:a:0] concat=n=4:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
                 
                 DispatchQueue.main.async {
@@ -131,88 +138,100 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     MobileFFmpeg.execute(cut1)
                     MobileFFmpeg.execute(cut2)
                     MobileFFmpeg.execute(cut3)
+                    self.removeFileIfExists(fileURL: url)
+                    self.removeFileIfExists(fileURL: url1)
+                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.player = nil
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
         } else {
-            let cut = "-ss \(st) -i \(filePath) -to \(tl) -c copy \(url)"
+            let cut = "-ss \(startTime) -i \(filePath) -to \(durationTime) -c copy \(url)"
             MobileFFmpeg.execute(cut)
-            let cut1 = "-ss 0 -i \(filePath) -to \(crtime) -c copy \(url1)"
+            let cut1 = "-ss 0 -i \(filePath) -to \(endTime) -c copy \(url1)"
             MobileFFmpeg.execute(cut1)
-            let cut2 = "-ss \(crtime) -i \(filePath) -to \(dr) -c copy \(url2)"
+            let cut2 = "-ss \(endTime) -i \(filePath) -to \(dr) -c copy \(url2)"
             MobileFFmpeg.execute(cut2)
             
-            let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(crtime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(crtime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
+            let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(endTime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(endTime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
             let cmdvd11 = "-i \(furl) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
             
-            
-            let cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(crtime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(crtime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(crtime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+            let cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
             let cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-            let cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(crtime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(crtime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(crtime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+            
+            let cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
             let cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
             
-            if quality == "PushRight"{
-               let ad2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
-                
-                let cmdvd4 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
-                
-                DispatchQueue.main.async {
-                    ZKProgressHUD.show()
-                }
-                let serialQueue = DispatchQueue(label: "serialQueue")
-                serialQueue.async {
-                    MobileFFmpeg.execute(cmdvd1)
-                    MobileFFmpeg.execute(cmdvd11)
-                    MobileFFmpeg.execute(ad2)
-                    MobileFFmpeg.execute(cmdvd4)
-                    print(final)
+            let cmdaudio = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio)"
+            let cmdaudio2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
+            
+            let cmdfinal = "-i \(furl) -i \(audio) -c copy -map 0:v -map 1:a \(final)"
+            let cmdfinal2 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
+            
+            
+            DispatchQueue.main.async {
+                ZKProgressHUD.show()
+            }
+            let serialQueue = DispatchQueue(label: "serialQueue")
+            serialQueue.async {
+                if endTime == duration {
+                    if self.quality == "PushRight"{
+                        MobileFFmpeg.execute(cmdvd1)
+                    }
+                    if self.quality == "CrossFade"{
+                        MobileFFmpeg.execute(cmdvd2)
+                        //CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
+                    }
+                    if self.quality == "ColorFade"{
+                        MobileFFmpeg.execute(cmdvd3)
+                    }
+                    MobileFFmpeg.execute(cmdaudio)
+                    MobileFFmpeg.execute(cmdfinal)
+                    self.removeFileIfExists(fileURL: url)
+                    self.removeFileIfExists(fileURL: url1)
+                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.player = nil
                         self.navigationController?.popViewController(animated: true)
                     }
-                }
-            } else {
-                let ad2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
-                
-                let cmdvd4 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
-                DispatchQueue.main.async {
-                    ZKProgressHUD.show()
-                }
-                let serialQueue = DispatchQueue(label: "serialQueue")
-                serialQueue.async {
+                } else {
+                    if self.quality == "PushRight"{
+                        MobileFFmpeg.execute(cmdvd1)
+                        MobileFFmpeg.execute(cmdvd11)
+                    }
                     if self.quality == "CrossFade"{
                         MobileFFmpeg.execute(cmdvd2)
                         MobileFFmpeg.execute(cmdvd22)
-                        MobileFFmpeg.execute(ad2)
-                        MobileFFmpeg.execute(cmdvd4)
-                        CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
-                        self.duplicateURL = final
-                        self.isSave = true
-                        self.delegate.transformReal(url: self.duplicateURL!)
+                        //CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     }
                     if self.quality == "ColorFade"{
                         MobileFFmpeg.execute(cmdvd3)
                         MobileFFmpeg.execute(cmdvd33)
-                        MobileFFmpeg.execute(ad2)
-                        MobileFFmpeg.execute(cmdvd4)
-                        self.duplicateURL = final
-                        self.isSave = true
-                        self.delegate.transformReal(url: self.duplicateURL!)
                     }
+                    MobileFFmpeg.execute(cmdaudio2)
+                    MobileFFmpeg.execute(cmdfinal2)
+                    self.removeFileIfExists(fileURL: url)
+                    self.removeFileIfExists(fileURL: url1)
+                    self.removeFileIfExists(fileURL: url2)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
+                        self.player = nil
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
@@ -254,9 +273,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                                                name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
         
         let layer: AVPlayerLayer = AVPlayerLayer(player: player)
-        layer.backgroundColor = UIColor.white.cgColor
+        layer.backgroundColor = UIColor.black.cgColor
         layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
-//        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        //        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
         playerView.layer.addSublayer(layer)
     }
@@ -278,12 +297,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             print(error.localizedDescription)
             return
         }
-    }
-    
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
     }
     
     func startPlaybackTimeChecker() {

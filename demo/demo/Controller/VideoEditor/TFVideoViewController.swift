@@ -33,6 +33,8 @@ class TFVideoViewController: UIViewController {
     }
     
     @IBAction func back(_ sender: Any) {
+        playerController.player = nil
+        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -112,13 +114,7 @@ class TFVideoViewController: UIViewController {
             currentAnimation2 = 0
         }
     }
-    
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
-    }
-    
+ 
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
     }

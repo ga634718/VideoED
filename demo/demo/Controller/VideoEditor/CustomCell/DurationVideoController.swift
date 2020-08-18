@@ -11,6 +11,7 @@ class DurationVideoController: UIViewController {
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var LblStartTime: UILabel!
     @IBOutlet weak var LblEndTime: UILabel!
+    @IBOutlet weak var slider: UISlider!
     
     
     var player: AVPlayer?
@@ -25,6 +26,7 @@ class DurationVideoController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        customizeSlider(sliderName: slider)
         
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -33,11 +35,19 @@ class DurationVideoController: UIViewController {
         loadAsset(asset)
         trimmerView.asset = asset
         trimmerView.delegate = self
+        valueSpeed()
+        player?.rate = 1
     }
     
     @IBAction func back(_ sender: Any) {
-        player?.pause()
+        player = nil
+        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    
+    @IBAction func changeSpeed(_ sender: UISlider) {
+        slider.value = roundf(slider.value)
     }
     
     @IBAction func save(_ sender: Any) {
@@ -45,7 +55,7 @@ class DurationVideoController: UIViewController {
             debugPrint("Video not found")
             return
         }
-        player?.pause()
+        player = nil
         isSave = true
         
         let furl = createUrlInApp(name: "audio.MOV")
@@ -82,21 +92,6 @@ class DurationVideoController: UIViewController {
                 self.navigationController?.popViewController(animated: true)
             }
         }
-    }
-    
-    @IBAction func nomal(_ sender: UIButton) {
-        rate = 1.0
-        player?.rate = rate
-    }
-    
-    @IBAction func backwardsPressed(_ sender: Any) {
-        rate = 0.5
-        player?.rate = rate
-    }
-    
-    @IBAction func forwardPressed(_ sender: Any) {
-        rate = 2.0
-        player?.rate = rate
     }
     
     func changeIconBtnPlay() {
@@ -159,10 +154,46 @@ class DurationVideoController: UIViewController {
             return
         }
     }
-    func currentDate()->String{
-        let df = DateFormatter()
-        df.dateFormat = "yyyyMMddhhmmss"
-        return df.string(from: Date())
+    func customizeSlider(sliderName:UISlider) {
+        // change UIbutton propertie
+        let color = (UIColor(red: 252/255, green: 186/255, blue: 3/255, alpha: 1.0))
+        
+        slider.layer.cornerRadius = 10
+        slider.layer.borderWidth = 0.8
+        slider.layer.borderColor = color.cgColor
+        
+        slider.layer.shadowColor = color.cgColor
+        slider.layer.shadowOpacity = 0.8
+        slider.layer.shadowRadius = 7
+        slider.layer.shadowOffset = CGSize(width: 1, height: 1)
+        
+    }
+    
+    func valueSpeed(){
+        if slider.value == 0
+        {
+            player?.rate = 0
+        }
+        if slider.value == 0.5
+        {
+            rate = 0.5
+            player?.rate = 0.5
+        }
+        if slider.value == 1
+        {
+            rate = 1
+            player?.rate = 1
+        }
+        if slider.value == 1.5
+        {
+            rate = 1.5
+            player?.rate = 1.5
+        }
+        if slider.value == 2
+        {
+            rate = 2
+            player?.rate = 2
+        }
     }
     
     func startPlaybackTimeChecker() {
