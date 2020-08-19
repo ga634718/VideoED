@@ -46,7 +46,7 @@ class DurationVideoController: UIViewController {
     
     @IBAction func changeSpeed(_ sender: UISlider) {
         slider.value = roundf(slider.value)
-        rate = slider.value * 0.5
+        rate = slider.value * 0.1
         player.rate = rate
         playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
         startPlaybackTimeChecker()

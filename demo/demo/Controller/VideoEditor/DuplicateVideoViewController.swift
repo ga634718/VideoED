@@ -20,6 +20,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     var path:NSURL!
     var duplicateURL: URL!
     var isSave = false
+    var ratio:CGFloat!
     var delegate: TransformCropVideoDelegate!
     
     override func viewDidLoad() {
@@ -30,6 +31,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         let asset = AVAsset(url: path as URL)
         loadAsset(asset)
         setlabel()
+        ratio = getVideoRatio(url: path as URL)
     }
     
     @IBAction func back(_ sender: Any) {
@@ -39,6 +41,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func save(_ sender: Any) {
+        
+        player.pause()
         guard let filePath = path else {
             debugPrint("Video not found")
             return
@@ -157,15 +161,36 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             MobileFFmpeg.execute(cut1)
             let cut2 = "-ss \(endTime) -i \(filePath) -to \(dr) -c copy \(url2)"
             MobileFFmpeg.execute(cut2)
+            var cmdvd2 = ""
+            var cmdvd3 = ""
+            var cmdvd22 = ""
+            var cmdvd33 = ""
             
             let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(endTime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(endTime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
             let cmdvd11 = "-i \(furl) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
+            if ratio == 1 {
+                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+                
+                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+                
+            } else if ratio > 1{
+                
+                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+                
+                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            } else if ratio < 1{
+                
+                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+                
+                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            }
             
-            let cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-            let cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-            
-            let cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-            let cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
             
             let cmdaudio = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio)"
             let cmdaudio2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
