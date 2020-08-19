@@ -11,8 +11,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var LblStartTime: UILabel!
     @IBOutlet weak var LblEndTime: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     
-    var player: AVPlayer?
+    var player = AVPlayer()
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
     var quality: String = "None"
@@ -32,7 +33,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        player = nil
+        player.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
@@ -46,27 +47,27 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         let startTime = CGFloat(CMTimeGetSeconds(trimmerView.startTime!))
         let endTime = CGFloat(CMTimeGetSeconds(trimmerView.endTime!))
         let durationTime = CGFloat(CMTimeGetSeconds((trimmerView.endTime!) - trimmerView.startTime!))
-        let lateTime = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
+        let lateTime = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)! - trimmerView.endTime!))
         //        let currentTime = CGFloat(CMTimeGetSeconds((player?.currentTime())!))
-        let duration = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+        let duration = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
         let dr = duration - endTime
         let dr2 = endTime + durationTime
         
-        let url = createUrlInApp(name: "cutvideo1.mp4")
+        let url = createUrlInApp(name: "cutvideo1.MOV")
         removeFileIfExists(fileURL: url)
-        let url1 = createUrlInApp(name: "cutvideo2.mp4")
+        let url1 = createUrlInApp(name: "cutvideo2.MOV")
         removeFileIfExists(fileURL: url1)
-        let url2 = createUrlInApp(name: "cutvideo3.mp4")
+        let url2 = createUrlInApp(name: "cutvideo3.MOV")
         removeFileIfExists(fileURL: url2)
-        let furl = createUrlInApp(name: "videodemo1.mp4")
+        let furl = createUrlInApp(name: "videodemo1.MOV")
         removeFileIfExists(fileURL: furl)
-        let furl1 = createUrlInApp(name: "videodemo2.mp4")
+        let furl1 = createUrlInApp(name: "videodemo2.MOV")
         removeFileIfExists(fileURL: furl1)
-        let audio = createUrlInApp(name: "audio.mp4")
+        let audio = createUrlInApp(name: "audio.MOV")
         removeFileIfExists(fileURL: audio)
-        let audio2 = createUrlInApp(name: "audio2.mp4")
+        let audio2 = createUrlInApp(name: "audio2.MOV")
         removeFileIfExists(fileURL: audio2)
-        let final = createUrlInApp(name: "\(currentDate()).mp4")
+        let final = createUrlInApp(name: "\(currentDate()).MOV")
         removeFileIfExists(fileURL: final)
         
         if quality == "None" {
@@ -144,7 +145,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
-                        self.player = nil
+                        self.player.pause()
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
@@ -183,7 +184,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     }
                     if self.quality == "CrossFade"{
                         MobileFFmpeg.execute(cmdvd2)
-                        //CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     }
                     if self.quality == "ColorFade"{
                         MobileFFmpeg.execute(cmdvd3)
@@ -196,10 +196,11 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
+//                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
-                        self.player = nil
+                        self.player.pause()
                         self.navigationController?.popViewController(animated: true)
                     }
                 } else {
@@ -210,7 +211,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     if self.quality == "CrossFade"{
                         MobileFFmpeg.execute(cmdvd2)
                         MobileFFmpeg.execute(cmdvd22)
-                        //CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     }
                     if self.quality == "ColorFade"{
                         MobileFFmpeg.execute(cmdvd3)
@@ -222,45 +222,41 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
+//                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
                     DispatchQueue.main.async {
                         ZKProgressHUD.dismiss(0.5)
                         ZKProgressHUD.showSuccess()
-                        self.player = nil
+                        self.player.pause()
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
         }
+        
     }
     
     @IBAction func duplicate(_ sender: Any) {
-        player?.pause()
+        player.pause()
         chooseQuality()
     }
     
     @IBAction func play(_ sender: Any) {
-        
-        guard let player = player else { return }
-        
-        if !player.isPlaying {
-            player.play()
-            (sender as AnyObject).setImage(UIImage(named: "Pause"), for: UIControl.State.normal)
-            startPlaybackTimeChecker()
-        } else {
-            (sender as AnyObject).setImage(UIImage(named: "icon_play"), for: UIControl.State.normal)
+        if player.isPlaying {
             player.pause()
             stopPlaybackTimeChecker()
+        } else {
+            player.play()
+            startPlaybackTimeChecker()
         }
+        changeIconBtnPlay()
     }
     
     override func loadAsset(_ asset: AVAsset) {
         addVideoPlayer(with: asset, playerView: playerView)
         trimmerView.asset = asset
         trimmerView.delegate = self
-//        trimmerView.handleWidth = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
-//        trimmerView.maxDuration = Double(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
     }
     
     private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
@@ -278,6 +274,17 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         playerView.layer.addSublayer(layer)
     }
     
+    func getVideoRatio(url:URL) -> CGFloat{
+        let size = resolutionSizeForLocalVideo(url: url)
+        return size!.width/size!.height
+    }
+    
+    func resolutionSizeForLocalVideo(url:URL) -> CGSize? {
+        guard let track = AVAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: abs(size.width), height: abs(size.height))
+    }
+    
     func setlabel(){
         LblStartTime.text = trimmerView.startTime?.positionalTime
         LblEndTime.text = trimmerView.endTime?.positionalTime
@@ -285,8 +292,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     
     @objc func itemDidFinishPlaying(_ notification: Notification) {
         if let startTime = trimmerView.startTime {
-            player?.seek(to: startTime)
+            player.seek(to: startTime)
         }
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
     }
     
     func createUrlInApp(name: String ) -> URL {
@@ -314,32 +322,42 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     
     @objc func onPlaybackTimeChecker() {
         
-        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime, let player = player else {
-            return
+        guard let start = trimmerView.startTime, let end = trimmerView.endTime else {
+                return
+            }
+            
+            let playbackTime = player.currentTime()
+            trimmerView.seek(to: playbackTime)
+            
+            if playbackTime >= end {
+                player.seek(to: start, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                trimmerView.seek(to: start)
+            }
         }
-        
-        let playBackTime = player.currentTime()
-        trimmerView.seek(to: playBackTime)
-        
-        if playBackTime >= endTime {
-            player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-            trimmerView.seek(to: startTime)
-        }
-    }
+    
+    func changeIconBtnPlay() {
+         if player.isPlaying {
+             playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
+         } else {
+             playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+         }
+     }
 }
 
 extension DuplicateVideoViewController: TrimmerViewDelegate, PassQualityDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        player?.play()
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
         startPlaybackTimeChecker()
         setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
-        player?.pause()
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         setlabel()
     }
     func chooseQuality() {

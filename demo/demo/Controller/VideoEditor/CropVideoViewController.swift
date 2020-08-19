@@ -214,20 +214,8 @@ extension CropVideoViewController: ThumbSelectorViewDelegate, UICollectionViewDe
        }
    }
     
-   
-    
     func didChangeThumbPosition(_ imageTime: CMTime) {
         videoCropView.player?.seek(to: imageTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
     }
 }
 
-extension UIImage {
-    
-    func crop(in frame: CGRect) -> UIImage? {
-        
-        if let croppedImage = self.cgImage?.cropping(to: frame) {
-            return UIImage(cgImage: croppedImage, scale: scale, orientation: imageOrientation)
-        }
-        return nil
-    }
-}

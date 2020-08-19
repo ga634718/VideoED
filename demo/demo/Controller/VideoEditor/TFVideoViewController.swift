@@ -6,8 +6,10 @@ import ZKProgressHUD
 
 
 class TFVideoViewController: UIViewController {
-    @IBOutlet weak var ViewVideo: UIView!
+    @IBOutlet weak var videoView: UIView!
+    @IBOutlet weak var playButton: UIButton!
     
+    var player = AVPlayer()
     var playerController = AVPlayerViewController()
     var currentAnimation = 0
     var currentAnimation2 = 0
@@ -16,6 +18,8 @@ class TFVideoViewController: UIViewController {
     var tfURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!
+    var playbackTimeCheckerTimer: Timer?
+    var trimmerPositionChangedTimer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()      
@@ -24,16 +28,20 @@ class TFVideoViewController: UIViewController {
         super.viewDidAppear(animated)
         let player = AVPlayer(url: path as URL)
         playerController.player = player
-        playerController.view.frame.size.height = ViewVideo.frame.size.height
-        playerController.view.frame.size.width = ViewVideo.frame.size.width
+        playerController.view.frame.size.height = videoView.frame.size.height
+        playerController.view.frame.size.width = videoView.frame.size.width
         playerController.showsPlaybackControls = false
-        playerController.view.frame = CGRect(x: 0, y: 0, width: ViewVideo.frame.width, height:  ViewVideo.frame.height)
-        self.ViewVideo.addSubview(playerController.view)
-        playerController.player?.play()
+        let asset = AVAsset(url: path as URL)
+        let playerItem = AVPlayerItem(asset: asset)
+        playerController.player = AVPlayer(playerItem: playerItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(itemDidFinishPlaying(_:)),
+        name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
+        playerController.view.frame = CGRect(x: 0, y: 0, width: videoView.frame.width, height:  videoView.frame.height)
+        self.videoView.addSubview(playerController.view)
     }
     
     @IBAction func back(_ sender: Any) {
-        playerController.player = nil
+        playerController.player?.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
@@ -114,6 +122,48 @@ class TFVideoViewController: UIViewController {
             currentAnimation2 = 0
         }
     }
+    
+    @IBAction func playVideo(_ sender: Any) {
+        if playerController.player!.isPlaying {
+            playerController.player?.pause()
+            stopPlaybackTimeChecker()
+        } else {
+            playerController.player?.play()
+            startPlaybackTimeChecker()
+        }
+        changeIconBtnPlay()
+    }
+    
+    func changeIconBtnPlay() {
+        if playerController.player!.isPlaying {
+            playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
+        } else {
+            playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+        }
+    }
+    
+    func startPlaybackTimeChecker() {
+        stopPlaybackTimeChecker()
+        playbackTimeCheckerTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(BackgroundVideoColorController.onPlaybackTimeChecker), userInfo: nil, repeats: true)
+    }
+    
+    func stopPlaybackTimeChecker() {
+        playbackTimeCheckerTimer?.invalidate()
+        playbackTimeCheckerTimer = nil
+    }
+    
+    @objc func itemDidFinishPlaying(_ notification: Notification) {
+        playerController.player!.seek(to: CMTime.zero)
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+    }
+    
+    @objc func onPlaybackTimeChecker() {
+        
+        let playbackTime = playerController.player!.currentTime()
+        if playbackTime >= (playerController.player?.currentItem?.asset.duration)! {
+            player.seek(to: CMTime.zero, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        }
+    }
  
     func createUrlInApp(name: String ) -> URL {
         return URL(fileURLWithPath: "\(NSTemporaryDirectory())\(name)")
@@ -127,5 +177,4 @@ class TFVideoViewController: UIViewController {
             return
         }
     }
-    
 }

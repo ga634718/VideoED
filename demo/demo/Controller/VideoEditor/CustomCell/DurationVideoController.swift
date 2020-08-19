@@ -14,7 +14,7 @@ class DurationVideoController: UIViewController {
     @IBOutlet weak var slider: UISlider!
     
     
-    var player: AVPlayer?
+    var player = AVPlayer()
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
     var path:NSURL!
@@ -28,7 +28,7 @@ class DurationVideoController: UIViewController {
         super.viewDidLoad()
         customizeSlider(sliderName: slider)
         rate = 1
-        player?.pause()
+        player.pause()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -38,7 +38,7 @@ class DurationVideoController: UIViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        player?.pause()
+        player.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
@@ -47,7 +47,9 @@ class DurationVideoController: UIViewController {
     @IBAction func changeSpeed(_ sender: UISlider) {
         slider.value = roundf(slider.value)
         rate = slider.value * 0.5
-        player?.rate = rate
+        player.rate = rate
+        playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
+        startPlaybackTimeChecker()
     }
     
     @IBAction func save(_ sender: Any) {
@@ -55,7 +57,7 @@ class DurationVideoController: UIViewController {
             debugPrint("Video not found")
             return
         }
-        player?.pause()
+        player.pause()
         isSave = true
         
         let furl = createUrlInApp(name: "audio.MOV")
@@ -95,20 +97,20 @@ class DurationVideoController: UIViewController {
     }
     
     func changeIconBtnPlay() {
-        if player!.isPlaying {
-            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+        if player.isPlaying {
+            playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
         } else {
-            playButton.setImage(UIImage(named: "Play"), for: .normal)
+            playButton.setImage(UIImage(named: "icon_play"), for: .normal)
         }
     }
     
     @IBAction func play(_ sender: Any) {
-        
-        if player!.isPlaying {
-            player?.pause()
+        if player.isPlaying {
+            player.pause()
             stopPlaybackTimeChecker()
         } else {
-            player?.play()
+            player.play()
+            player.rate = rate
             startPlaybackTimeChecker()
         }
         changeIconBtnPlay()
@@ -138,8 +140,9 @@ class DurationVideoController: UIViewController {
     
     @objc func itemDidFinishPlaying(_ notification: Notification) {
         if let startTime = trimmerView.startTime {
-            player?.seek(to: startTime)
+            player.seek(to: startTime)
         }
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
     }
     
     func createUrlInApp(name: String ) -> URL {
@@ -173,8 +176,7 @@ class DurationVideoController: UIViewController {
         slider.layer.shadowOffset = CGSize(width: 1, height: 1)
         
     }
-    
-    
+
     func startPlaybackTimeChecker() {
         
         stopPlaybackTimeChecker()
@@ -189,34 +191,51 @@ class DurationVideoController: UIViewController {
         playbackTimeCheckerTimer = nil
     }
     
+//    @objc func onPlaybackTimeChecker() {
+//
+//        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime, let player = player else {
+//            return
+//        }
+//
+//        let playBackTime = player.currentTime()
+//        trimmerView.seek(to: playBackTime)
+//
+//        if playBackTime >= endTime {
+//            player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+//            trimmerView.seek(to: startTime)
+//        }
+//    }
+//}
     @objc func onPlaybackTimeChecker() {
-        
-        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime, let player = player else {
+        guard let start = trimmerView.startTime, let end = trimmerView.endTime else {
             return
         }
         
-        let playBackTime = player.currentTime()
-        trimmerView.seek(to: playBackTime)
+        let playbackTime = player.currentTime()
+        trimmerView.seek(to: playbackTime)
         
-        if playBackTime >= endTime {
-            player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-            trimmerView.seek(to: startTime)
+        if playbackTime >= end {
+            player.seek(to: start, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            trimmerView.seek(to: start)
         }
     }
 }
 
 extension DurationVideoController: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        player?.play()
+        
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
         startPlaybackTimeChecker()
         setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
-        player?.pause()
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         setlabel()
     }
 }

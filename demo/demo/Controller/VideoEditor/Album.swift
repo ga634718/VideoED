@@ -1,17 +1,9 @@
-//
-//  Album.swift
-//  MT
-//
-//  Created by Hoang Ga on 7/31/20.
-//  Copyright © 2020 Hoang Ga. All rights reserved.
-//
-
 import Foundation
 import Photos
 
 class CustomPhotoAlbum {
     
-    static let albumName = "Editor"
+    static let albumName = "VideoED"
     static let sharedInstance = CustomPhotoAlbum()
     
     var assetCollection: PHAssetCollection!
@@ -23,7 +15,7 @@ class CustomPhotoAlbum {
             let fetchOptions = PHFetchOptions()
             fetchOptions.predicate = NSPredicate(format: "title = %@", CustomPhotoAlbum.albumName)
             let collection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOptions)
-
+            
             if let firstObject: AnyObject = collection.firstObject {
                 return collection.firstObject as! PHAssetCollection
             }
@@ -48,7 +40,7 @@ class CustomPhotoAlbum {
     func saveVideo(url: URL) {
         
         if assetCollection == nil {
-            return   // If there was an error upstream, skip the save.
+            return
         }
         
         PHPhotoLibrary.shared().performChanges({
@@ -58,6 +50,4 @@ class CustomPhotoAlbum {
             albumChangeRequest?.addAssets([assetPlaceholder] as NSFastEnumeration)
         }, completionHandler: nil)
     }
-    
-    
 }

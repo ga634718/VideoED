@@ -9,8 +9,9 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     @IBOutlet weak var trimmerView: TrimmerView!
     @IBOutlet weak var LblStartTime: UILabel!
     @IBOutlet weak var LblEndTime: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     
-    var player: AVPlayer?
+    var player = AVPlayer()
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
     var path:NSURL!
@@ -20,8 +21,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let asset = AVAsset(url: path as URL)
@@ -29,9 +30,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         setlabel()
     }
     
-    
     @IBAction func back(_ sender: Any) {
-        player = nil
+        player.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
@@ -45,20 +45,19 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     
     @IBAction func deleteVideo(_ sender: Any) {
-        player?.pause()
+        player.pause()
         isSave = true
         
         guard let filePath = path else {
             debugPrint("Video not found")
             return
         }
-        
         //CutVideo
         let zero = 0
         let st = CGFloat(CMTimeGetSeconds(trimmerView.startTime!))
         let st1 = CGFloat(CMTimeGetSeconds(trimmerView.endTime!))
-        let end = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)! - trimmerView.endTime!))
-        let curr = CGFloat(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+        let end = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)! - trimmerView.endTime!))
+        let curr = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
         
         let url = createUrlInApp(name: "vdCut1.MOV")
         removeFileIfExists(fileURL: url)
@@ -132,20 +131,16 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         }
         
     }
-
+    
     @IBAction func play(_ sender: Any) {
-        
-        guard let player = player else { return }
-        
-        if !player.isPlaying {
-            player.play()
-            (sender as AnyObject).setImage(UIImage(named: "Pause"), for: UIControl.State.normal)
-            startPlaybackTimeChecker()
-        } else {
-            (sender as AnyObject).setImage(UIImage(named: "Play"), for: UIControl.State.normal)
+        if player.isPlaying {
             player.pause()
             stopPlaybackTimeChecker()
+        } else {
+            player.play()
+            startPlaybackTimeChecker()
         }
+        changeIconBtnPlay()
     }
     
     override func loadAsset(_ asset: AVAsset) {
@@ -171,8 +166,9 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     @objc func itemDidFinishPlaying(_ notification: Notification) {
         if let startTime = trimmerView.startTime {
-            player?.seek(to: startTime)
+            player.seek(to: startTime)
         }
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
     }
     
     func createUrlInApp(name: String ) -> URL {
@@ -192,6 +188,14 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         LblStartTime.text = trimmerView.startTime?.positionalTime
         LblEndTime.text = trimmerView.endTime?.positionalTime
     }
+    
+    func changeIconBtnPlay() {
+         if player.isPlaying {
+             playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
+         } else {
+             playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+         }
+     }
 
     func startPlaybackTimeChecker() {
         
@@ -209,32 +213,34 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     @objc func onPlaybackTimeChecker() {
         
-        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime, let player = player else {
+        guard let start = trimmerView.startTime, let end = trimmerView.endTime else {
             return
         }
         
-        let playBackTime = player.currentTime()
-        trimmerView.seek(to: playBackTime)
+        let playbackTime = player.currentTime()
+        trimmerView.seek(to: playbackTime)
         
-        if playBackTime >= endTime {
-            player.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-            trimmerView.seek(to: startTime)
+        if playbackTime >= end {
+            player.seek(to: start, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            trimmerView.seek(to: start)
         }
     }
 }
 
 extension TrimmerViewController: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        player?.play()
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
         startPlaybackTimeChecker()
         setlabel()
     }
     
     func didChangePositionBar(_ playerTime: CMTime) {
         stopPlaybackTimeChecker()
-        player?.pause()
-        player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+        player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         setlabel()
     }
 }

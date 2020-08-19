@@ -10,10 +10,9 @@ import PryntTrimmerView
 class BackgroundVideoColorController: UIViewController {
     @IBOutlet weak var collBgColor: UICollectionView!
     @IBOutlet weak var videoView: UIView!
+    @IBOutlet weak var playButton: UIButton!
     
-    var player: AVPlayer?
-    var playbackTimeCheckerTimer: Timer?
-    var trimmerPositionChangedTimer: Timer?
+    var player = AVPlayer()
     var arr2 = [ModelBackgroundColor]()
     var playerController = AVPlayerViewController()
     var str = ""
@@ -22,6 +21,8 @@ class BackgroundVideoColorController: UIViewController {
     var isSave = false
     var delegate: TransformCropVideoDelegate!
     var ratio:CGFloat!
+    var playbackTimeCheckerTimer: Timer?
+    var trimmerPositionChangedTimer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,16 +42,17 @@ class BackgroundVideoColorController: UIViewController {
         arr2.append(ModelBackgroundColor(uiColor: UIColor.init(red: 102/255, green: 102/255, blue: 102/255, alpha: 1)))
         
         let player = AVPlayer(url: path as URL)
-        
         playerController.player = player
         playerController.view.frame.size.height = videoView.frame.size.height
         playerController.view.frame.size.width = videoView.frame.size.width
         playerController.showsPlaybackControls = false
+        let asset = AVAsset(url: path as URL)
+        let playerItem = AVPlayerItem(asset: asset)
+        playerController.player = AVPlayer(playerItem: playerItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(itemDidFinishPlaying(_:)),
+        name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
         playerController.view.frame = CGRect(x: 0, y: 0, width: videoView.frame.width, height:  videoView.frame.height)
-        
         self.videoView.addSubview(playerController.view)
-        playerController.player?.play()
-        
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -58,12 +60,28 @@ class BackgroundVideoColorController: UIViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        player = nil
+        playerController.player?.pause()
         clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func play(_ sender: Any) {
+        if playerController.player!.isPlaying {
+            playerController.player?.pause()
+            stopPlaybackTimeChecker()
+        } else {
+            playerController.player?.play()
+            startPlaybackTimeChecker()
+        }
+        changeIconBtnPlay()
+    }
+    
+    func changeIconBtnPlay() {
+        if playerController.player!.isPlaying {
+            playButton.setImage(UIImage(named: "icon_pause"), for: .normal)
+        } else {
+            playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+        }
     }
     
     @IBAction func save(_ sender: Any) {
@@ -90,31 +108,16 @@ class BackgroundVideoColorController: UIViewController {
             }
         }
     }
-    private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
-        let playerItem = AVPlayerItem(asset: asset)
-        player = AVPlayer(playerItem: playerItem)
-        let layer: AVPlayerLayer = AVPlayerLayer(player: player)
-        layer.backgroundColor = UIColor.white.cgColor
-        layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
-        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
-        playerView.layer.addSublayer(layer)
-    }
-    
-   
-    func startPlaybackTimeChecker() {
-        
-        stopPlaybackTimeChecker()
-        playbackTimeCheckerTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self,
-                                                        selector:
-            #selector(TrimmerViewController.onPlaybackTimeChecker), userInfo: nil, repeats: true)
-    }
-    
-    func stopPlaybackTimeChecker() {
-        
-        playbackTimeCheckerTimer?.invalidate()
-        playbackTimeCheckerTimer = nil
-    }
+//    private func addVideoPlayer(with asset: AVAsset, playerView: UIView) {
+//        let playerItem = AVPlayerItem(asset: asset)
+//        player = AVPlayer(playerItem: playerItem)
+//        let layer: AVPlayerLayer = AVPlayerLayer(player: player)
+//        layer.backgroundColor = UIColor.white.cgColor
+//        layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
+//        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+//        playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
+//        playerView.layer.addSublayer(layer)
+//    }
     
     func squareVideo(url : URL, ratio : CGFloat) -> URL{
         let furl = createUrlInApp(name: "video1.MOV")
@@ -136,6 +139,7 @@ class BackgroundVideoColorController: UIViewController {
         }
         return furl2
     }
+    
     func getVideoRatio(url:URL) -> CGFloat{
         let size = resolutionSizeForLocalVideo(url: url)
         return size!.width/size!.height
@@ -157,6 +161,29 @@ class BackgroundVideoColorController: UIViewController {
         } catch {
             print(error.localizedDescription)
             return
+        }
+    }
+    
+    func startPlaybackTimeChecker() {
+        stopPlaybackTimeChecker()
+        playbackTimeCheckerTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(BackgroundVideoColorController.onPlaybackTimeChecker), userInfo: nil, repeats: true)
+    }
+    
+    func stopPlaybackTimeChecker() {
+        playbackTimeCheckerTimer?.invalidate()
+        playbackTimeCheckerTimer = nil
+    }
+    
+    @objc func itemDidFinishPlaying(_ notification: Notification) {
+        playerController.player!.seek(to: CMTime.zero)
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
+    }
+    
+    @objc func onPlaybackTimeChecker() {
+        
+        let playbackTime = playerController.player!.currentTime()
+        if playbackTime >= (playerController.player?.currentItem?.asset.duration)! {
+            player.seek(to: CMTime.zero, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
     }
 }
