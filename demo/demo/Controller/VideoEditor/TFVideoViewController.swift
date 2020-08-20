@@ -11,7 +11,7 @@ class TFVideoViewController: UIViewController {
     var playerController = AVPlayerViewController()
     var currentAnimation = 0
     var str = ""
-    var path:NSURL!
+    var path:URL!
     var tfURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!

@@ -8,5 +8,6 @@ target 'demo' do
   pod 'ZKProgressHUD', '5.0.1'
   pod 'PryntTrimmerView'
   pod 'mobile-ffmpeg-full-gpl', '~> 4.3.2'
+  pod 'ICGVideoTrimmer', '~> 1.1'
   # Pods for demo
 end

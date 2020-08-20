@@ -13,7 +13,7 @@ class DurationVideoController: UIViewController {
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
-    var path:NSURL!
+    var path:URL!
     var rate: Float!
     var delegate: TransformCropVideoDelegate!
     var url: URL!

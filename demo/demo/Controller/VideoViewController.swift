@@ -24,7 +24,6 @@ class VideoViewController: UIViewController {
     var ratio2:CGFloat!
     var quality: String = "1280:720"
     var fileManage = HandleOutputFile()
-
     
     @IBOutlet weak var collectionViewFunc: UICollectionView!
     @IBOutlet weak var videoView: UIView!
@@ -44,28 +43,11 @@ class VideoViewController: UIViewController {
         ratio1 = getVideoRatio(url: originalVideoURL as URL)
     }
 
-        override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-//         videoPicker.sourceType = .photoLibrary
-//         videoPicker.delegate = self
-//         videoPicker.mediaTypes = ["public.movie"]
-//         videoPicker.modalPresentationStyle = .overFullScreen
-//         initVideoTimeline(url: originalVideoURL as URL)
-//         initFuncCollectionView()
-//         buttonPlay.isHidden = true
-//         fixedVideoURL = originalVideoURL as URL
-//         ratio1 = getVideoRatio(url: originalVideoURL as URL)
-            resetPlayer()
-            initVideoTimeline(url: fixedVideoURL)
-            print("video did appear")
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        resetPlayer()
+        initVideoTimeline(url: fixedVideoURL)
      }
-    
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        initVideoTimeline(url: originalVideoURL as URL)
-//        buttonPlay.isHidden = true
-//        fixedVideoURL = originalVideoURL as URL?
-//    }
     
     @IBAction func btnBack(_ sender: Any) {
         resetPlayer()
@@ -73,15 +55,6 @@ class VideoViewController: UIViewController {
     }
     
     @IBAction func btnSave(_ sender: Any) {
-//        let alert = UIAlertController(title: "Save video to your device", message: "", preferredStyle: .alert)
-//        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: {(action: UIAlertAction) in
-//        }))
-//        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: {(action: UIAlertAction) in
-//            UISaveVideoAtPathToSavedPhotosAlbum(self.fixedVideoURL!.path, nil, nil, nil)
-//            ZKProgressHUD.showSuccess()
-//            ZKProgressHUD.dismiss(0.5)
-//        }))
-//        present(alert, animated: true)
         videoTimelineView.stop()
         setPlayButtonImage()
         chooseQuality()
@@ -133,7 +106,7 @@ extension VideoViewController: UICollectionViewDelegate, UICollectionViewDataSou
             getVideo()
 //           insertVideo()
         case 1:
-            print(videoTimelineView.currentTime)
+            navigateOtherView(view: "MainAudioView")
         case 2:
             navigateOtherView(view: "Duration")
         case 3:
@@ -169,7 +142,7 @@ extension VideoViewController : TimelinePlayStatusReceiver{
         playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
         playerLayer.player!.actionAtItemEnd = AVPlayer.ActionAtItemEnd.none
         playerLayer.frame = videoView.bounds
-//        playerLayer.backgroundColor = UIColor.black.cgColor
+        playerLayer.backgroundColor = UIColor.black.cgColor
         self.videoView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})
         self.videoView.layer.addSublayer(playerLayer)
         setPlayButtonImage()
@@ -319,33 +292,38 @@ extension VideoViewController {
         switch view {
         case "Duration":
             let View = sb.instantiateViewController(withIdentifier: view) as! DurationVideoController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "CROP":
             let View = sb.instantiateViewController(withIdentifier: view) as! CropVideoViewController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "TF":
             let View = sb.instantiateViewController(withIdentifier: view) as! TFVideoViewController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "BGCOLOR":
             let View = sb.instantiateViewController(withIdentifier: view) as! BackgroundVideoColorController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "Duplicate":
             let View = sb.instantiateViewController(withIdentifier: view) as! DuplicateVideoViewController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
             self.navigationController?.pushViewController(View, animated: true)
         case "TRIMMER":
             let View = sb.instantiateViewController(withIdentifier: view) as! TrimmerViewController
-            View.path = self.originalVideoURL
+            View.path = self.fixedVideoURL
             View.delegate = self
+            self.navigationController?.pushViewController(View, animated: true)
+        case "MainAudioView":
+            let View = sb.instantiateViewController(withIdentifier: view) as! ViewControllerAudio
+            View.urlVideo = self.fixedVideoURL
+            View.audioURLDelegate = self
             self.navigationController?.pushViewController(View, animated: true)
         default:
             break
@@ -439,5 +417,11 @@ extension VideoViewController: ChooseQualityDelegate{
                 }
             }
         }
+    }
+}
+
+extension VideoViewController: AudioURLDelegate {
+    func getAudioURL(url: URL) {
+        self.fixedVideoURL = url
     }
 }

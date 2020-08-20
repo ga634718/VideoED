@@ -19,7 +19,7 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     @IBOutlet weak var videoCropView: VideoCropView!
     @IBOutlet weak var selectThumbView: ThumbSelectorView!
     
-    var path : NSURL!
+    var path : URL!
     var cropURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!

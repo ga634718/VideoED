@@ -52,9 +52,9 @@ extension ImageViewController: UICollectionViewDelegate, UICollectionViewDataSou
         return cell
     }
     
-        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            return CGSize(width: collectionView.frame.size.width/8.25, height: collectionView.frame.size.height)
-    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.size.width/8.25, height: collectionView.frame.size.height)
+}
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.row {
@@ -102,6 +102,7 @@ extension UIImageView{
 }
 
 extension ImageViewController{
+    
     func setImageViewBackground(){
         let x = (imageView.image!.size.width) / 4
         let y = (imageView.image!.size.height) / 4
@@ -110,9 +111,10 @@ extension ImageViewController{
         imageViewBackGround.image = UIImage(cgImage: (imageView.image?.cgImage?.cropping(to: CGRect(x: x, y: y, width: width, height: height)))!)
         imageViewBackGround.addBlurEffect()
     }
+    
     func initFuncCollectionView(){
         collectionView.register(UINib(nibName: "CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CollectionViewCell")
-        arr.append(ModelItem(id: 1,img: "crop   ", title: "CROP"))
+        arr.append(ModelItem(id: 1,img: "crop", title: "CROP"))
         arr.append(ModelItem(id: 2,img: "rotate", title: "ROTATE"))
     }
 }

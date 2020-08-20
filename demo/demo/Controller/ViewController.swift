@@ -58,21 +58,6 @@ extension ViewController: UINavigationControllerDelegate, UIImagePickerControlle
             }
             imagePicker.dismiss(animated: true, completion: nil)
             navigateOtherView(view: "ImageView")
-//            if let imgUrl = info[UIImagePickerController.InfoKey.imageURL] as? URL{
-//                let imgName = imgUrl.lastPathComponent
-//                let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
-//                let localPath = documentDirectory?.appending(imgName)
-//
-//                let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-//                let data = image.pngData()! as NSData
-//                data.write(toFile: localPath!, atomically: true)
-//                let photoURL = URL.init(fileURLWithPath: localPath!)
-//                print(imgName)
-//                print(image.pngData())
-//                print(documentDirectory)
-//                print(localPath)
-//                print(photoURL)
-//            }
         }
     }
     

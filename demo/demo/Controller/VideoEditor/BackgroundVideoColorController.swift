@@ -18,7 +18,7 @@ class BackgroundVideoColorController: UIViewController {
     var arr2 = [ModelBackgroundColor]()
     var playerController = AVPlayerViewController()
     var str = ""
-    var path:NSURL!
+    var path:URL!
     var BgURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!

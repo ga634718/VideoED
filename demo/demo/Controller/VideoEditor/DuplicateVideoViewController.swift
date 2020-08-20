@@ -15,7 +15,7 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
     var quality: String = "None"
-    var path:NSURL!
+    var path:URL!
     var duplicateURL: URL!
     var isSave = false
     var delegate: TransformCropVideoDelegate!

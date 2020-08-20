@@ -14,7 +14,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     var player: AVPlayer?
     var playbackTimeCheckerTimer: Timer?
     var trimmerPositionChangedTimer: Timer?
-    var path:NSURL!
+    var path:URL!
     var delegate: TransformCropVideoDelegate!
     var trimURL: URL!
     var isSave = false
