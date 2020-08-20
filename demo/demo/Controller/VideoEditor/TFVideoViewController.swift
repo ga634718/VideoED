@@ -34,7 +34,9 @@ class TFVideoViewController: UIViewController {
         playerController.player = AVPlayer(playerItem: playerItem)
         NotificationCenter.default.addObserver(self, selector: #selector(itemDidFinishPlaying(_:)),
         name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
+        playerController.view.frame = CGRect(x: 0, y: 0, width: videoView.frame.width, height:  videoView.frame.height)
         self.videoView.addSubview(playerController.view)
+        playerController.view.backgroundColor = nil
     }
     
     @IBAction func back(_ sender: Any) {

@@ -74,8 +74,6 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
-                self.removeFileIfExists(fileURL: url1)
-                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {
@@ -96,8 +94,6 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
-                self.removeFileIfExists(fileURL: url1)
-                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {
@@ -120,8 +116,6 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut)
                 MobileFFmpeg.execute(cut2)
                 MobileFFmpeg.execute(cut3)
-                self.removeFileIfExists(fileURL: url1)
-                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {

@@ -72,7 +72,10 @@ class BackgroundVideoColorController: UIViewController {
         playerController.player = AVPlayer(playerItem: playerItem)
         NotificationCenter.default.addObserver(self, selector: #selector(itemDidFinishPlaying(_:)),
         name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
+        playerController.view.frame = CGRect(x: 0, y: 0, width: videoView.frame.width, height:  videoView.frame.height)
         self.videoView.addSubview(playerController.view)
+        playerController.view.backgroundColor = nil
+        
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -217,7 +220,7 @@ extension BackgroundVideoColorController: UICollectionViewDelegate, UICollection
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width:collectionView.frame.width/15, height: collectionView.frame.width)
+        return CGSize(width:collectionView.frame.width/15, height: collectionView.frame.height)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         playerController.view.backgroundColor = arr2[indexPath.row].uiColor

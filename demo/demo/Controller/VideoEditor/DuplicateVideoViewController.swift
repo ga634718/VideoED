@@ -78,7 +78,27 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         removeFileIfExists(fileURL: final)
         
         if quality == "None" {
-            if startTime == 0 {
+            
+            if (startTime == 0 && endTime == duration) {
+                
+                let duplicate = "-i \(filePath) -i \(filePath) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
+                
+                DispatchQueue.main.async {
+                    ZKProgressHUD.show()
+                }
+                let serialQueue = DispatchQueue(label: "serialQueue")
+                serialQueue.async {
+                    MobileFFmpeg.execute(duplicate)
+                    self.duplicateURL = final
+                    self.isSave = true
+                    self.delegate.transformReal(url: self.duplicateURL!)
+                    DispatchQueue.main.async {
+                        ZKProgressHUD.dismiss(0.5)
+                        ZKProgressHUD.showSuccess()
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }else if startTime == 0 {
                 let cut1 = "-ss 0 -i \(filePath) -to \(durationTime) -c copy \(url1)"
                 MobileFFmpeg.execute(cut1)
                 let cut2 = "-ss \(endTime) -i \(filePath) -to \(lateTime) -c copy \(url2)"
@@ -91,8 +111,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
                     MobileFFmpeg.execute(duplicate)
-                    self.removeFileIfExists(fileURL: url1)
-                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -117,8 +135,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 let serialQueue = DispatchQueue(label: "serialQueue")
                 serialQueue.async {
                     MobileFFmpeg.execute(duplicate)
-                    self.removeFileIfExists(fileURL: url1)
-                    self.removeFileIfExists(fileURL: url2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -211,13 +227,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     }
                     MobileFFmpeg.execute(cmdaudio)
                     MobileFFmpeg.execute(cmdfinal1)
-                    self.removeFileIfExists(fileURL: url)
-                    self.removeFileIfExists(fileURL: url1)
-                    self.removeFileIfExists(fileURL: url2)
-                    self.removeFileIfExists(fileURL: furl1)
-                    self.removeFileIfExists(fileURL: furl2)
-                    self.removeFileIfExists(fileURL: audio1)
-                    self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -243,13 +252,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     }
                     MobileFFmpeg.execute(cmdaudio2)
                     MobileFFmpeg.execute(cmdfinal2)
-                    self.removeFileIfExists(fileURL: url)
-                    self.removeFileIfExists(fileURL: url1)
-                    self.removeFileIfExists(fileURL: url2)
-                    self.removeFileIfExists(fileURL: furl1)
-                    self.removeFileIfExists(fileURL: furl2)
-                    self.removeFileIfExists(fileURL: audio1)
-                    self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
 //                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     self.isSave = true
