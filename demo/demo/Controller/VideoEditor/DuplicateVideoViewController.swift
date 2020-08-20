@@ -21,6 +21,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     var duplicateURL: URL!
     var isSave = false
     var ratio:CGFloat!
+    var width:Int!
+    var height:Int!
     var delegate: TransformCropVideoDelegate!
     
     override func viewDidLoad() {
@@ -32,6 +34,8 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         loadAsset(asset)
         setlabel()
         ratio = getVideoRatio(url: path as URL)
+        width = Int(getVideoWidth(url: path as URL))
+        height = Int(getVideoheight(url: path as URL))
     }
     
     @IBAction func back(_ sender: Any) {
@@ -143,6 +147,10 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
+                    self.removeFileIfExists(fileURL: furl)
+                    self.removeFileIfExists(fileURL: furl1)
+                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -161,42 +169,32 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             MobileFFmpeg.execute(cut1)
             let cut2 = "-ss \(endTime) -i \(filePath) -to \(dr) -c copy \(url2)"
             MobileFFmpeg.execute(cut2)
-            var cmdvd2 = ""
-            var cmdvd3 = ""
-            var cmdvd22 = ""
-            var cmdvd33 = ""
+            var cmdfinal1 = ""
+            var cmdfinal2 = ""
             
             let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(endTime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(endTime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
             let cmdvd11 = "-i \(furl) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
-            if ratio == 1 {
-                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-                
-                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x1280,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-                
-            } else if ratio > 1{
-                
-                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-                
-                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=1280x720,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=1280x720,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-            } else if ratio < 1{
-                
-                cmdvd2 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-                
-                cmdvd3 = "-i \(filePath) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-                cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.5):d=1.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v] -aspect 9:16,trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
-            }
             
+            let cmdvd2 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+            let cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            
+            let cmdvd3 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.2):d=0.2,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-0.2)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
+            let cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.2):d=0.2,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-0.2)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
             
             let cmdaudio = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio)"
             let cmdaudio2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
             
-            let cmdfinal = "-i \(furl) -i \(audio) -c copy -map 0:v -map 1:a \(final)"
-            let cmdfinal2 = "-i \(furl1) -i \(audio2) -c copy -map 0:v -map 1:a \(final)"
+            if ratio == 1 {
+                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
+            } else if ratio < 1 {
+                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
+            } else {
+                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
+            }
+             
             
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
@@ -214,10 +212,14 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                         MobileFFmpeg.execute(cmdvd3)
                     }
                     MobileFFmpeg.execute(cmdaudio)
-                    MobileFFmpeg.execute(cmdfinal)
+                    MobileFFmpeg.execute(cmdfinal1)
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
+                    self.removeFileIfExists(fileURL: furl)
+                    self.removeFileIfExists(fileURL: furl1)
+                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
                     self.isSave = true
                     self.delegate.transformReal(url: self.duplicateURL!)
@@ -246,6 +248,10 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
+                    self.removeFileIfExists(fileURL: furl)
+                    self.removeFileIfExists(fileURL: furl1)
+                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
 //                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)
                     self.isSave = true
@@ -259,11 +265,11 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                 }
             }
         }
-        
     }
     
     @IBAction func duplicate(_ sender: Any) {
         player.pause()
+        playButton.setImage(UIImage(named: "icon_play"), for: .normal)
         chooseQuality()
     }
     
@@ -302,6 +308,16 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     func getVideoRatio(url:URL) -> CGFloat{
         let size = resolutionSizeForLocalVideo(url: url)
         return size!.width/size!.height
+    }
+    
+    func getVideoWidth(url:URL) -> CGFloat{
+        let size = resolutionSizeForLocalVideo(url: url)
+        return size!.width
+    }
+    
+    func getVideoheight(url:URL) -> CGFloat{
+        let size = resolutionSizeForLocalVideo(url: url)
+        return size!.height
     }
     
     func resolutionSizeForLocalVideo(url:URL) -> CGSize? {
