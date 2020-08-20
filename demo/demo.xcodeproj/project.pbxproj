@@ -178,7 +178,6 @@
 			isa = PBXGroup;
 			children = (
 				19F2D9F824EE611400547EE8 /* ControllerAudio */,
-				19A7886624EE5E6200DF9FB5 /* Storyboard */,
 				19788B5D24ED275600000D17 /* Cell */,
 				19788B5824ED273200000D17 /* Model */,
 			);
@@ -297,14 +296,6 @@
 				199C17B424D4187B007206D2 /* Album.swift */,
 			);
 			path = VideoEditor;
-			sourceTree = "<group>";
-		};
-		19A7886624EE5E6200DF9FB5 /* Storyboard */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Storyboard;
-			path = ../Storyboard;
 			sourceTree = "<group>";
 		};
 		19AF7D7924A9D31400EBDF7F /* CustomView */ = {
