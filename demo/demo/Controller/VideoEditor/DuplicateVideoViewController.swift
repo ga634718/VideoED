@@ -40,7 +40,6 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
     
     @IBAction func back(_ sender: Any) {
         player.pause()
-        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -67,12 +66,12 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
         removeFileIfExists(fileURL: url1)
         let url2 = createUrlInApp(name: "cutvideo3.MOV")
         removeFileIfExists(fileURL: url2)
-        let furl = createUrlInApp(name: "videodemo1.MOV")
-        removeFileIfExists(fileURL: furl)
-        let furl1 = createUrlInApp(name: "videodemo2.MOV")
+        let furl1 = createUrlInApp(name: "videodemo1.MOV")
         removeFileIfExists(fileURL: furl1)
-        let audio = createUrlInApp(name: "audio.MOV")
-        removeFileIfExists(fileURL: audio)
+        let furl2 = createUrlInApp(name: "videodemo2.MOV")
+        removeFileIfExists(fileURL: furl2)
+        let audio1 = createUrlInApp(name: "audio.MOV")
+        removeFileIfExists(fileURL: audio1)
         let audio2 = createUrlInApp(name: "audio2.MOV")
         removeFileIfExists(fileURL: audio2)
         let final = createUrlInApp(name: "\(currentDate()).MOV")
@@ -147,9 +146,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
-                    self.removeFileIfExists(fileURL: furl)
                     self.removeFileIfExists(fileURL: furl1)
-                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: furl2)
+                    self.removeFileIfExists(fileURL: audio1)
                     self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
                     self.isSave = true
@@ -172,30 +171,29 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
             var cmdfinal1 = ""
             var cmdfinal2 = ""
             
-            let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(endTime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(endTime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl)"
-            let cmdvd11 = "-i \(furl) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
+            let cmdvd1 = "-i \(url1) -i \(url) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(endTime)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(endTime)),0,iw/2)':y=0[out]\" -map '[out]' \(furl1)"
+            let cmdvd11 = "-i \(furl1) -i \(url2) -filter_complex \"[0:v]setpts=PTS-STARTPTS[v0]; [1:v]setpts=PTS-STARTPTS,tpad=start_duration=\(dr2)[v1]; [v0][v1]hstack,crop=iw/2:ih:x='clip(2000*(t-\(dr2)),0,iw/2)':y=0[out]\" -map '[out]' \(furl2)"
             
-            let cmdvd2 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-            let cmdvd22 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            let cmdvd2 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-2.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            let cmdvd22 = "-i \(furl1) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2):d=1:alpha=1,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1:alpha=1,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-2.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl2)"
             
-            let cmdvd3 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.2):d=0.2,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-0.2)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl)"
-            let cmdvd33 = "-i \(furl) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.2):d=0.2,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=1.5,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-0.2)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            let cmdvd3 = "-i \(url1) -i \(url) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(endTime-0.5):d=0.5,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=0.5,setpts=PTS-STARTPTS+\(endTime)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(endTime-1.0)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl1)"
+            let cmdvd33 = "-i \(furl1) -i \(url2) -f lavfi -i color=black -filter_complex \"[0:v]format=pix_fmts=yuva420p,fade=t=out:st=\(dr2-0.2):d=0.2,setpts=PTS-STARTPTS[va0];[1:v]format=pix_fmts=yuva420p,fade=t=in:st=0:d=0.2,setpts=PTS-STARTPTS+\(dr2)/TB[va1];[2:v]scale=\(width!)x\(height!),trim=duration=\(dr2-0.4)[over]; [over][va0]overlay[over1]; [over1][va1]overlay=format=yuv420[outv]\" -vcodec libx264 -map [outv] \(furl2)"
             
-            let cmdaudio = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio)"
+            let cmdaudio = "-i \(url1) -i \(url) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio1)"
             let cmdaudio2 = "-i \(url1) -i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] [2:v:0] [2:a:0] concat=n=3:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(audio2)"
             
             if ratio == 1 {
-                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
-                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal1 = "-i \(furl1) -i \(audio1) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl2) -i \(audio2) -aspect 1:1 -c copy -map 0:v -map 1:a \(final)"
             } else if ratio < 1 {
-                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
-                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal1 = "-i \(furl1) -i \(audio1) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl2) -i \(audio2) -aspect 9:16 -c copy -map 0:v -map 1:a \(final)"
             } else {
-                cmdfinal1 = "-i \(furl) -i \(audio) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
-                cmdfinal2 = "-i \(furl1) -i \(audio2) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal1 = "-i \(furl1) -i \(audio1) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
+                cmdfinal2 = "-i \(furl2) -i \(audio2) -aspect 16:9 -c copy -map 0:v -map 1:a \(final)"
             }
-             
-            
+
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
             }
@@ -216,9 +214,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
-                    self.removeFileIfExists(fileURL: furl)
                     self.removeFileIfExists(fileURL: furl1)
-                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: furl2)
+                    self.removeFileIfExists(fileURL: audio1)
                     self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
                     self.isSave = true
@@ -248,9 +246,9 @@ class DuplicateVideoViewController: AssetSelectionVideoViewController {
                     self.removeFileIfExists(fileURL: url)
                     self.removeFileIfExists(fileURL: url1)
                     self.removeFileIfExists(fileURL: url2)
-                    self.removeFileIfExists(fileURL: furl)
                     self.removeFileIfExists(fileURL: furl1)
-                    self.removeFileIfExists(fileURL: audio)
+                    self.removeFileIfExists(fileURL: furl2)
+                    self.removeFileIfExists(fileURL: audio1)
                     self.removeFileIfExists(fileURL: audio2)
                     self.duplicateURL = final
 //                    CustomPhotoAlbum.sharedInstance.saveVideo(url: final)

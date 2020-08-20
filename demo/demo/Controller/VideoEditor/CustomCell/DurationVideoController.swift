@@ -39,7 +39,6 @@ class DurationVideoController: UIViewController {
     
     @IBAction func back(_ sender: Any) {
         player.pause()
-        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -85,6 +84,8 @@ class DurationVideoController: UIViewController {
             MobileFFmpeg.execute(audio)
             MobileFFmpeg.execute(video)
             MobileFFmpeg.execute(speed)
+            self.removeFileIfExists(fileURL: furl)
+            self.removeFileIfExists(fileURL: furl2)
             self.url = final
             self.isSave = true
             self.delegate.transformDuration(url: self.url!)
@@ -131,7 +132,6 @@ class DurationVideoController: UIViewController {
                                                name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
         
         let layer: AVPlayerLayer = AVPlayerLayer(player: player)
-        layer.backgroundColor = UIColor.black.cgColor
         layer.frame = CGRect(x: 0, y: 0, width: playerView.frame.width, height: playerView.frame.height)
 //        layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         playerView.layer.sublayers?.forEach({$0.removeFromSuperlayer()})

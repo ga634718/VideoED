@@ -41,7 +41,7 @@ class CropMaskView: UIView {
         cropBoxView.layer.mask = maskLayer
 
         cropBoxView.translatesAutoresizingMaskIntoConstraints = false
-        cropBoxView.backgroundColor = UIColor.black.withAlphaComponent(0.85)
+        cropBoxView.backgroundColor = UIColor.darkGray.withAlphaComponent(0.86)
         addSubview(cropBoxView)
         addSubview(frameView)
 

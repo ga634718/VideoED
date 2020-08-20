@@ -28,21 +28,17 @@ class TFVideoViewController: UIViewController {
         super.viewDidAppear(animated)
         let player = AVPlayer(url: path as URL)
         playerController.player = player
-        playerController.view.frame.size.height = videoView.frame.size.height
-        playerController.view.frame.size.width = videoView.frame.size.width
         playerController.showsPlaybackControls = false
         let asset = AVAsset(url: path as URL)
         let playerItem = AVPlayerItem(asset: asset)
         playerController.player = AVPlayer(playerItem: playerItem)
         NotificationCenter.default.addObserver(self, selector: #selector(itemDidFinishPlaying(_:)),
         name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: playerItem)
-        playerController.view.frame = CGRect(x: 0, y: 0, width: videoView.frame.width, height:  videoView.frame.height)
         self.videoView.addSubview(playerController.view)
     }
     
     @IBAction func back(_ sender: Any) {
         playerController.player?.pause()
-        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -50,31 +46,34 @@ class TFVideoViewController: UIViewController {
         
         playerController.player?.pause()
         
-        guard let filePath = path else {
-            debugPrint("Video not found")
-            return
-        }
-        let final = createUrlInApp(name: "\(currentDate()).MOV")
-        removeFileIfExists(fileURL: final)
-        //\"transpose=1\"
-        
-        let transform = "-i \(filePath) -vf \(str) -codec:a copy \(final)"
-        DispatchQueue.main.async {
-            ZKProgressHUD.show()
-        }
-        let serialQueue = DispatchQueue(label: "serialQueue")
-        serialQueue.async {
-            MobileFFmpeg.execute(transform)
-            self.tfURL = final
-            self.isSave = true
-            self.delegate.transformReal(url: self.tfURL!)
-            DispatchQueue.main.async {
-                ZKProgressHUD.dismiss(0.5)
-                ZKProgressHUD.showSuccess()
-                self.navigationController?.popViewController(animated: true)
+        if str == "" {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            guard let filePath = path else {
+                debugPrint("Video not found")
+                return
             }
-        }
-        
+            let final = createUrlInApp(name: "\(currentDate()).MOV")
+            removeFileIfExists(fileURL: final)
+            //\"transpose=1\"
+            
+            let transform = "-i \(filePath) -vf \(str) -codec:a copy \(final)"
+            DispatchQueue.main.async {
+                ZKProgressHUD.show()
+            }
+            let serialQueue = DispatchQueue(label: "serialQueue")
+            serialQueue.async {
+                MobileFFmpeg.execute(transform)
+                self.tfURL = final
+                self.isSave = true
+                self.delegate.transformReal(url: self.tfURL!)
+                DispatchQueue.main.async {
+                    ZKProgressHUD.dismiss(0.5)
+                    ZKProgressHUD.showSuccess()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        } 
     }
     
     @IBAction func flip(_ sender: Any) {
@@ -144,7 +143,7 @@ class TFVideoViewController: UIViewController {
     
     func startPlaybackTimeChecker() {
         stopPlaybackTimeChecker()
-        playbackTimeCheckerTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(BackgroundVideoColorController.onPlaybackTimeChecker), userInfo: nil, repeats: true)
+        playbackTimeCheckerTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(TFVideoViewController.onPlaybackTimeChecker), userInfo: nil, repeats: true)
     }
     
     func stopPlaybackTimeChecker() {

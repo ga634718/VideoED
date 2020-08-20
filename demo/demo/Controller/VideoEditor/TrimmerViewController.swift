@@ -32,7 +32,6 @@ class TrimmerViewController: AssetSelectionVideoViewController {
     
     @IBAction func back(_ sender: Any) {
         player.pause()
-        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -59,8 +58,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
         let end = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)! - trimmerView.endTime!))
         let curr = CGFloat(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
         
-        let url = createUrlInApp(name: "vdCut1.MOV")
-        removeFileIfExists(fileURL: url)
+        let url1 = createUrlInApp(name: "vdCut1.MOV")
+        removeFileIfExists(fileURL: url1)
         let url2 = createUrlInApp(name: "vdCut2.MOV")
         removeFileIfExists(fileURL: url2)
         let final = createUrlInApp(name: "\(currentDate()).MOV")
@@ -75,6 +74,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
+                self.removeFileIfExists(fileURL: url1)
+                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {
@@ -95,6 +96,8 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             let serialQueue = DispatchQueue(label: "serialQueue")
             serialQueue.async {
                 MobileFFmpeg.execute(cut2)
+                self.removeFileIfExists(fileURL: url1)
+                self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true
                 DispatchQueue.main.async {
@@ -106,9 +109,9 @@ class TrimmerViewController: AssetSelectionVideoViewController {
             }
         } else {
             
-            let cut = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(url)"
+            let cut = "-ss \(zero) -i \(filePath) -to \(st) -c copy \(url1)"
             let cut2 = "-ss \(st1) -i \(filePath) -to \(end) -c copy \(url2)"
-            let cut3 = "-i \(url) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
+            let cut3 = "-i \(url1) -i \(url2) -filter_complex \"[0:v:0] [0:a:0] [1:v:0] [1:a:0] concat=n=2:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" \(final)"
             DispatchQueue.main.async {
                 ZKProgressHUD.show()
             }
@@ -117,7 +120,7 @@ class TrimmerViewController: AssetSelectionVideoViewController {
                 MobileFFmpeg.execute(cut)
                 MobileFFmpeg.execute(cut2)
                 MobileFFmpeg.execute(cut3)
-                self.removeFileIfExists(fileURL: url)
+                self.removeFileIfExists(fileURL: url1)
                 self.removeFileIfExists(fileURL: url2)
                 self.trimURL = final
                 self.isSave = true

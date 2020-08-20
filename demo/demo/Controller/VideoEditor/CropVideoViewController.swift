@@ -52,8 +52,6 @@ class CropVideoViewController: AssetSelectionVideoViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        player = nil
-        clearTempDirectory()
         self.navigationController?.popViewController(animated: true)
     }
     
